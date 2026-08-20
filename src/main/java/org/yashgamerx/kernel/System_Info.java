@@ -1,11 +1,11 @@
 package org.yashgamerx.kernel;
 
+import org.yashgamerx.kernel.oem.OemId;
+
 import java.lang.foreign.MemorySegment;
 
 public record System_Info(
-        int dwOemId,
-        short wProcessorArchitecture,
-        short wReserved,
+        OemId oemId,
         int dwPageSize,
         MemorySegment lpMinimumApplicationAddress,
         MemorySegment lpMaximumApplicationAddress,
