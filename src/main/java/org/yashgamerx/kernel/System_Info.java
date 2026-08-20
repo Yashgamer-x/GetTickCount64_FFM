@@ -2,6 +2,7 @@ package org.yashgamerx.kernel;
 
 import org.yashgamerx.kernel.oem.OemId;
 
+import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 
 public record System_Info(
@@ -16,4 +17,18 @@ public record System_Info(
         short wProcessorLevel,
         short wProcessorRevision
 ) {
+
+    public static MemoryLayout.PathElement oemIdElement = MemoryLayout.PathElement.groupElement("oemId");
+    public static MemoryLayout.PathElement dwOemIdElement = MemoryLayout.PathElement.groupElement("dwOemId");
+    public static MemoryLayout.PathElement wProcessorArchitectureElement = MemoryLayout.PathElement.groupElement("wProcessorArchitecture");
+    public static MemoryLayout.PathElement wReservedElement = MemoryLayout.PathElement.groupElement("wReserved");
+    public static MemoryLayout.PathElement dwPageSizeElement = MemoryLayout.PathElement.groupElement("dwPageSize");
+    public static MemoryLayout.PathElement lpMinimumApplicationAddressElement = MemoryLayout.PathElement.groupElement("lpMinimumApplicationAddress");
+    public static MemoryLayout.PathElement lpMaximumApplicationAddressElement = MemoryLayout.PathElement.groupElement("lpMaximumApplicationAddress");
+    public static MemoryLayout.PathElement dwActiveProcessorMaskElement = MemoryLayout.PathElement.groupElement("dwActiveProcessorMask");
+    public static MemoryLayout.PathElement dwNumberOfProcessorsElement = MemoryLayout.PathElement.groupElement("dwNumberOfProcessors");
+    public static MemoryLayout.PathElement dwProcessorTypeElement = MemoryLayout.PathElement.groupElement("dwProcessorType");
+    public static MemoryLayout.PathElement dwAllocationGranularityElement = MemoryLayout.PathElement.groupElement("dwAllocationGranularity");
+    public static MemoryLayout.PathElement wProcessorLevelElement = MemoryLayout.PathElement.groupElement("wProcessorLevel");
+    public static MemoryLayout.PathElement wProcessorRevisionElement = MemoryLayout.PathElement.groupElement("wProcessorRevision");
 }
