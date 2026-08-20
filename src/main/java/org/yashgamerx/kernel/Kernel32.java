@@ -82,7 +82,37 @@ public class Kernel32 {
         return (int) getLogicalDrives.invokeExact();
     }
 
-    public int getSystemInfo() throws Throwable {
-        return (int) getSystemInfo.invokeExact();
+    public System_Info getSystemInfo() throws Throwable {
+        final var OEM_LAYOUT = MemoryLayout.unionLayout(
+                ValueLayout.JAVA_INT.withName("dwOemId"),
+                ValueLayout.JAVA_SHORT.withName("wProcessorArchitecture"),
+                ValueLayout.JAVA_SHORT.withName("wReserved")
+        ).withName("oemId");
+        MemoryLayout SYSTEM_INFO_LAYOUT = MemoryLayout.structLayout(
+                OEM_LAYOUT, // oemId
+                ValueLayout.JAVA_INT.withName("dwPageSize"),
+
+                ValueLayout.ADDRESS.withName("lpMinimumApplicationAddress"),
+
+                ValueLayout.ADDRESS.withName("lpMaximumApplicationAddress"),
+
+                ValueLayout.JAVA_LONG.withName("dwActiveProcessorMask"),
+
+                ValueLayout.JAVA_INT.withName("dwNumberOfProcessors"),
+
+                ValueLayout.JAVA_INT.withName("dwProcessorType"),
+
+                ValueLayout.JAVA_INT.withName("dwAllocationGranularity"),
+
+                ValueLayout.JAVA_SHORT.withName("wProcessorLevel"),
+
+                ValueLayout.JAVA_SHORT.withName("wProcessorRevision")
+        );
+        MemorySegment SYSTEM_INFO_SEGMENT = arena.allocate(SYSTEM_INFO_LAYOUT);
+        getSystemInfo.invokeExact(SYSTEM_INFO_SEGMENT);
+
+        return new System_Info(
+
+        );
     }
 }
