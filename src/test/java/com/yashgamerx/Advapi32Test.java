@@ -2,7 +2,7 @@ package com.yashgamerx;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.yashgamerx.Advapi32;
+import org.yashgamerx.advapi.Advapi32;
 
 import java.lang.foreign.Arena;
 

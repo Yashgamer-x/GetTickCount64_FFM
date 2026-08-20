@@ -1,4 +1,4 @@
-package org.yashgamerx;
+package org.yashgamerx.kernel;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
@@ -80,5 +80,9 @@ public class Kernel32 {
 
     public int getLogicalDrives() throws Throwable {
         return (int) getLogicalDrives.invokeExact();
+    }
+
+    public int getSystemInfo() throws Throwable {
+        return (int) getSystemInfo.invokeExact();
     }
 }

@@ -1,5 +1,7 @@
 package org.yashgamerx;
 
+import org.yashgamerx.advapi.Advapi32;
+
 import java.lang.foreign.*;
 
 public class Main {

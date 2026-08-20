@@ -1,4 +1,4 @@
-package org.yashgamerx;
+package org.yashgamerx.advapi;
 
 import org.yashgamerx.exception.GetUserNameWException;
 
