@@ -19,4 +19,15 @@ public class Kernel32Test {
         }
     }
 
+    @Test
+    public void testGetFileAttributeW() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            int perm = kernel32.getFileAttributesW("C:\\Windows");
+            Assertions.assertEquals(16, perm);
+        } catch (Throwable e) {
+            Assertions.fail();
+        }
+    }
+
 }
