@@ -31,4 +31,36 @@ public record System_Info(
     public static MemoryLayout.PathElement dwAllocationGranularityElement = MemoryLayout.PathElement.groupElement("dwAllocationGranularity");
     public static MemoryLayout.PathElement wProcessorLevelElement = MemoryLayout.PathElement.groupElement("wProcessorLevel");
     public static MemoryLayout.PathElement wProcessorRevisionElement = MemoryLayout.PathElement.groupElement("wProcessorRevision");
+
+    @Override
+    public String toString() {
+        return """
+            System Information:
+              OEM / Processor Architecture: %s
+              Page Size: %d bytes
+              Minimum Application Address: %s
+              Maximum Application Address: %s
+              Active Processor Mask: 0x%016X
+              Number of Processors: %d
+              Processor Type: %d
+              Allocation Granularity: %d bytes
+              Processor Level: %d
+              Processor Revision: %d
+            """.formatted(
+                oemId,
+                dwPageSize,
+                formatAddress(lpMinimumApplicationAddress),
+                formatAddress(lpMaximumApplicationAddress),
+                dwActiveProcessorMask,
+                dwNumberOfProcessors,
+                dwProcessorType,
+                dwAllocationGranularity,
+                Short.toUnsignedInt(wProcessorLevel),
+                Short.toUnsignedInt(wProcessorRevision)
+        );
+    }
+
+    private static String formatAddress(MemorySegment address) {
+        return "0x%016X".formatted(address.address());
+    }
 }

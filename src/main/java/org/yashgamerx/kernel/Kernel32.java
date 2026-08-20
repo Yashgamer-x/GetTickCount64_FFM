@@ -66,7 +66,7 @@ public class Kernel32 {
                 .orElseThrow();
         return linker.downcallHandle(
                 getSystemInfo_addr,
-                FunctionDescriptor.of(ValueLayout.JAVA_INT)
+                FunctionDescriptor.of(ValueLayout.ADDRESS)
         );
     }
 
@@ -160,11 +160,7 @@ public class Kernel32 {
     }
 
     private static OemId getOemId(int dwOemId, short wProcessorArchitecture, short wReserved) {
-        OemId oemId;
-        if (dwOemId != 0) {
-            oemId = new OemIdValue(dwOemId);
-        } else {
-            oemId = switch (Short.toUnsignedInt(wProcessorArchitecture)) {
+        return switch (Short.toUnsignedInt(wProcessorArchitecture)) {
                 case 0, 5, 6, 9, 12, 0xFFFF ->
                         new ProcessorArchitecture(wProcessorArchitecture, wReserved);
 
@@ -173,7 +169,5 @@ public class Kernel32 {
                                 "Unknown processor architecture: " +Short.toUnsignedInt(wProcessorArchitecture)
                         );
             };
-        }
-        return oemId;
     }
 }
