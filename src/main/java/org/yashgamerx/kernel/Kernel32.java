@@ -66,7 +66,7 @@ public class Kernel32 {
                 .orElseThrow();
         return linker.downcallHandle(
                 getSystemInfo_addr,
-                FunctionDescriptor.of(ValueLayout.ADDRESS)
+                FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)
         );
     }
 
