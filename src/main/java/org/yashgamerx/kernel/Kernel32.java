@@ -1,5 +1,9 @@
 package org.yashgamerx.kernel;
 
+import org.yashgamerx.kernel.oem.OemId;
+import org.yashgamerx.kernel.oem.OemIdValue;
+import org.yashgamerx.kernel.oem.ProcessorArchitecture;
+
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.VarHandle;
@@ -139,8 +143,37 @@ public class Kernel32 {
                 .varHandle(System_Info.wProcessorRevisionElement)
                 .get(SYSTEM_INFO_SEGMENT);
 
-        return new System_Info(
+        OemId oemId = getOemId(dwOemId, wProcessorArchitecture, wReserved);
 
+        return new System_Info(
+                oemId,
+                dwPageSize,
+                lpMinimumApplicationAddress,
+                lpMaximumApplicationAddress,
+                dwActiveProcessorMask,
+                dwNumberOfProcessors,
+                dwProcessorType,
+                dwAllocationGranularity,
+                wProcessorLevel,
+                wProcessorRevision
         );
+    }
+
+    private static OemId getOemId(int dwOemId, short wProcessorArchitecture, short wReserved) {
+        OemId oemId;
+        if (dwOemId != 0) {
+            oemId = new OemIdValue(dwOemId);
+        } else {
+            oemId = switch (Short.toUnsignedInt(wProcessorArchitecture)) {
+                case 0, 5, 6, 9, 12, 0xFFFF ->
+                        new ProcessorArchitecture(wProcessorArchitecture, wReserved);
+
+                default ->
+                        throw new IllegalStateException(
+                                "Unknown processor architecture: " +Short.toUnsignedInt(wProcessorArchitecture)
+                        );
+            };
+        }
+        return oemId;
     }
 }
