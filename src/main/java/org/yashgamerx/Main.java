@@ -1,23 +1,12 @@
 package org.yashgamerx;
 
 import java.lang.foreign.*;
-import java.lang.invoke.MethodHandle;
 
 public class Main {
     static void main() {
         try (Arena arena = Arena.ofConfined()) {
-            Linker linker = Linker.nativeLinker();
-            SymbolLookup kernel32 = SymbolLookup.libraryLookup(
-                    "kernel32.dll",
-                    arena
-            );
-            MemorySegment getTickCount64_addr = kernel32.find("GetTickCount64")
-                    .orElseThrow();
-            MethodHandle getTickCount64 = linker.downcallHandle(
-                    getTickCount64_addr,
-                    FunctionDescriptor.of(ValueLayout.JAVA_LONG)
-            );
-            long tickCount = (long) getTickCount64.invokeExact();
+            Kernel32 kernel32 = new Kernel32(arena);
+            long tickCount = kernel32.getTickCount64();
 
             long milliseconds = tickCount;
 
