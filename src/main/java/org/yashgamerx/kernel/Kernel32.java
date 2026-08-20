@@ -1,12 +1,10 @@
 package org.yashgamerx.kernel;
 
 import org.yashgamerx.kernel.oem.OemId;
-import org.yashgamerx.kernel.oem.OemIdValue;
 import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
-import java.lang.invoke.VarHandle;
 import java.nio.charset.StandardCharsets;
 
 public class Kernel32 {
@@ -18,18 +16,6 @@ public class Kernel32 {
     private final MethodHandle getFileAttributeW;
     private final MethodHandle getLogicalDrives;
     private final MethodHandle getSystemInfo;
-
-    private static final MemoryLayout PROCESSOR_ARCHITECTURE_LAYOUT =
-            MemoryLayout.structLayout(
-                    ValueLayout.JAVA_SHORT.withName("wProcessorArchitecture"),
-                    ValueLayout.JAVA_SHORT.withName("wReserved")
-            );
-
-    private static final MemoryLayout OEM_LAYOUT =
-            MemoryLayout.unionLayout(
-                    ValueLayout.JAVA_INT.withName("dwOemId"),
-                    PROCESSOR_ARCHITECTURE_LAYOUT.withName("processorArchitecture")
-            ).withName("oemId");
 
     public Kernel32(Arena arena) {
         this.arena = arena;
@@ -100,56 +86,45 @@ public class Kernel32 {
     }
 
     public System_Info getSystemInfo() throws Throwable {
-        MemoryLayout SYSTEM_INFO_LAYOUT = MemoryLayout.structLayout(
-                OEM_LAYOUT, // oemId
-                ValueLayout.JAVA_INT.withName("dwPageSize"),
-                ValueLayout.ADDRESS.withName("lpMinimumApplicationAddress"),
-                ValueLayout.ADDRESS.withName("lpMaximumApplicationAddress"),
-                ValueLayout.JAVA_LONG.withName("dwActiveProcessorMask"),
-                ValueLayout.JAVA_INT.withName("dwNumberOfProcessors"),
-                ValueLayout.JAVA_INT.withName("dwProcessorType"),
-                ValueLayout.JAVA_INT.withName("dwAllocationGranularity"),
-                ValueLayout.JAVA_SHORT.withName("wProcessorLevel"),
-                ValueLayout.JAVA_SHORT.withName("wProcessorRevision")
-        );
+        MemoryLayout SYSTEM_INFO_LAYOUT = System_Info.SYSTEM_INFO_LAYOUT;
         MemorySegment SYSTEM_INFO_SEGMENT = arena.allocate(SYSTEM_INFO_LAYOUT);
         getSystemInfo.invokeExact(SYSTEM_INFO_SEGMENT);
 
         int dwOemId = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.oemIdElement, System_Info.dwOemIdElement)
+                .varHandle(System_Info.OEM_ID_ELEMENT, System_Info.DW_OEM_ID_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         short wProcessorArchitecture = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.oemIdElement, System_Info.processorArchitectureElement, System_Info.wProcessorArchitectureElement)
+                .varHandle(System_Info.OEM_ID_ELEMENT, System_Info.PROCESSOR_ARCHITECTURE_ELEMENT, System_Info.W_PROCESSOR_ARCHITECTURE_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         short wReserved = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.oemIdElement, System_Info.processorArchitectureElement, System_Info.wReservedElement)
+                .varHandle(System_Info.OEM_ID_ELEMENT, System_Info.PROCESSOR_ARCHITECTURE_ELEMENT, System_Info.W_RESERVED_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         int dwPageSize = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.dwPageSizeElement)
+                .varHandle(System_Info.DW_PAGE_SIZE_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         MemorySegment lpMinimumApplicationAddress = (MemorySegment) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.lpMinimumApplicationAddressElement)
+                .varHandle(System_Info.LP_MINIMUM_APPLICATION_ADDRESS_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         MemorySegment lpMaximumApplicationAddress = (MemorySegment) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.lpMaximumApplicationAddressElement)
+                .varHandle(System_Info.LP_MAXIMUM_APPLICATION_ADDRESS_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         long dwActiveProcessorMask = (long) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.dwActiveProcessorMaskElement)
+                .varHandle(System_Info.DW_ACTIVE_PROCESSOR_MASK_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         int dwNumberOfProcessors = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.dwNumberOfProcessorsElement)
+                .varHandle(System_Info.DW_NUMBER_OF_PROCESSORS_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         int dwProcessorType = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.dwProcessorTypeElement)
+                .varHandle(System_Info.DW_PROCESSOR_TYPE_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         int dwAllocationGranularity = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.dwAllocationGranularityElement)
+                .varHandle(System_Info.DW_ALLOCATION_GRANULARITY_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         short wProcessorLevel = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.wProcessorLevelElement)
+                .varHandle(System_Info.W_PROCESSOR_LEVEL_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
         short wProcessorRevision = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.wProcessorRevisionElement)
+                .varHandle(System_Info.W_PROCESSOR_REVISION_ELEMENT)
                 .get(SYSTEM_INFO_SEGMENT, 0L);
 
         OemId oemId = getOemId(dwOemId, wProcessorArchitecture, wReserved);
