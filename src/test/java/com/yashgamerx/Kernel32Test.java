@@ -30,4 +30,15 @@ public class Kernel32Test {
         }
     }
 
+    @Test
+    public void testGetLogicalDrives() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            int drives = kernel32.getLogicalDrives();
+            System.out.println(Integer.toBinaryString(drives));
+        } catch (Throwable e) {
+            Assertions.fail();
+        }
+    }
+
 }
