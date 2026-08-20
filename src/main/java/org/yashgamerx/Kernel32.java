@@ -2,6 +2,7 @@ package org.yashgamerx;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
+import java.nio.charset.StandardCharsets;
 
 public class Kernel32 {
 
@@ -46,7 +47,12 @@ public class Kernel32 {
         return (long) getTickCount64.invokeExact();
     }
 
-    public int GetFileAttributesW() {
-        return 0;
+    public int GetFileAttributesW(String path) throws Throwable {
+        byte[] bytes = (path + "\0").getBytes(StandardCharsets.UTF_16LE);
+
+        MemorySegment pathSegment = arena.allocate(bytes.length);
+        pathSegment.copyFrom(MemorySegment.ofArray(bytes));
+
+        return (int) getFileAttributeW.invokeExact(pathSegment);
     }
 }
