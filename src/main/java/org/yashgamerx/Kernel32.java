@@ -12,6 +12,7 @@ public class Kernel32 {
     private final MethodHandle getTickCount64;
     private final MethodHandle getFileAttributeW;
     private final MethodHandle getLogicalDrives;
+    private final MethodHandle getSystemInfo;
 
     public Kernel32(Arena arena) {
         this.arena = arena;
@@ -22,6 +23,7 @@ public class Kernel32 {
         getTickCount64 = createGetTickCount64();
         getFileAttributeW = createGetFileAttributeW();
         getLogicalDrives = createGetLogicalDrives();
+        getSystemInfo = createGetSystemInfo();
     }
 
     private MethodHandle createGetTickCount64() {
@@ -46,10 +48,19 @@ public class Kernel32 {
     }
 
     private MethodHandle createGetLogicalDrives() {
-        MemorySegment getFileAttributesW_addr = kernel32.find("GetLogicalDrives")
+        MemorySegment getLogicalDrives_addr = kernel32.find("GetLogicalDrives")
                 .orElseThrow();
         return linker.downcallHandle(
-                getFileAttributesW_addr,
+                getLogicalDrives_addr,
+                FunctionDescriptor.of(ValueLayout.JAVA_INT)
+        );
+    }
+
+    private MethodHandle createGetSystemInfo(){
+        MemorySegment getSystemInfo_addr = kernel32.find("GetSystemInfo")
+                .orElseThrow();
+        return linker.downcallHandle(
+                getSystemInfo_addr,
                 FunctionDescriptor.of(ValueLayout.JAVA_INT)
         );
     }
