@@ -90,42 +90,20 @@ public class Kernel32 {
         MemorySegment SYSTEM_INFO_SEGMENT = arena.allocate(SYSTEM_INFO_LAYOUT);
         getSystemInfo.invokeExact(SYSTEM_INFO_SEGMENT);
 
-        int dwOemId = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.OEM_ID_ELEMENT, System_Info.DW_OEM_ID_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        short wProcessorArchitecture = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.OEM_ID_ELEMENT, System_Info.PROCESSOR_ARCHITECTURE_ELEMENT, System_Info.W_PROCESSOR_ARCHITECTURE_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        short wReserved = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.OEM_ID_ELEMENT, System_Info.PROCESSOR_ARCHITECTURE_ELEMENT, System_Info.W_RESERVED_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        int dwPageSize = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.DW_PAGE_SIZE_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        MemorySegment lpMinimumApplicationAddress = (MemorySegment) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.LP_MINIMUM_APPLICATION_ADDRESS_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        MemorySegment lpMaximumApplicationAddress = (MemorySegment) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.LP_MAXIMUM_APPLICATION_ADDRESS_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        long dwActiveProcessorMask = (long) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.DW_ACTIVE_PROCESSOR_MASK_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        int dwNumberOfProcessors = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.DW_NUMBER_OF_PROCESSORS_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        int dwProcessorType = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.DW_PROCESSOR_TYPE_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        int dwAllocationGranularity = (int) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.DW_ALLOCATION_GRANULARITY_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        short wProcessorLevel = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.W_PROCESSOR_LEVEL_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
-        short wProcessorRevision = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.W_PROCESSOR_REVISION_ELEMENT)
-                .get(SYSTEM_INFO_SEGMENT, 0L);
+        int dwOemId = (int) System_Info.DW_OEM_ID_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        short wProcessorArchitecture = (short) System_Info.W_PROCESSOR_ARCHITECTURE_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        short wReserved = (short) System_Info.W_RESERVED_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        int dwPageSize = (int) System_Info.DW_PAGE_SIZE_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        MemorySegment lpMinimumApplicationAddress =
+                (MemorySegment) System_Info.LP_MINIMUM_APPLICATION_ADDRESS_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        MemorySegment lpMaximumApplicationAddress =
+                (MemorySegment) System_Info.LP_MAXIMUM_APPLICATION_ADDRESS_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        long dwActiveProcessorMask = (long) System_Info.DW_ACTIVE_PROCESSOR_MASK_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        int dwNumberOfProcessors = (int) System_Info.DW_NUMBER_OF_PROCESSORS_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        int dwProcessorType = (int) System_Info.DW_PROCESSOR_TYPE_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        int dwAllocationGranularity = (int) System_Info.DW_ALLOCATION_GRANULARITY_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        short wProcessorLevel = (short) System_Info.W_PROCESSOR_LEVEL_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
+        short wProcessorRevision = (short) System_Info.W_PROCESSOR_REVISION_VAR_HANDLE.get(SYSTEM_INFO_SEGMENT, 0L);
 
         OemId oemId = getOemId(dwOemId, wProcessorArchitecture, wReserved);
 

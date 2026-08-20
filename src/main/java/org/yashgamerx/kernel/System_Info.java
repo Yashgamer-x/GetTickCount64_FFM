@@ -6,6 +6,7 @@ import java.lang.foreign.AddressLayout;
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;
 import java.lang.foreign.ValueLayout;
+import java.lang.invoke.VarHandle;
 
 public record System_Info(
         OemId oemId,
@@ -74,6 +75,32 @@ public record System_Info(
     public static final MemoryLayout.PathElement DW_ALLOCATION_GRANULARITY_ELEMENT = MemoryLayout.PathElement.groupElement("dwAllocationGranularity");
     public static final MemoryLayout.PathElement W_PROCESSOR_LEVEL_ELEMENT = MemoryLayout.PathElement.groupElement("wProcessorLevel");
     public static final MemoryLayout.PathElement W_PROCESSOR_REVISION_ELEMENT = MemoryLayout.PathElement.groupElement("wProcessorRevision");
+
+    // VarHandles for System_Info
+    public static final VarHandle DW_OEM_ID_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.OEM_ID_ELEMENT, System_Info.DW_OEM_ID_ELEMENT);
+    public static final VarHandle W_PROCESSOR_ARCHITECTURE_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.OEM_ID_ELEMENT, System_Info.PROCESSOR_ARCHITECTURE_ELEMENT, System_Info.W_PROCESSOR_ARCHITECTURE_ELEMENT);
+    public static final VarHandle W_RESERVED_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.OEM_ID_ELEMENT, System_Info.PROCESSOR_ARCHITECTURE_ELEMENT, System_Info.W_RESERVED_ELEMENT);
+    public static final VarHandle DW_PAGE_SIZE_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.DW_PAGE_SIZE_ELEMENT);
+    public static final VarHandle LP_MINIMUM_APPLICATION_ADDRESS_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.LP_MINIMUM_APPLICATION_ADDRESS_ELEMENT);
+    public static final VarHandle LP_MAXIMUM_APPLICATION_ADDRESS_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.LP_MAXIMUM_APPLICATION_ADDRESS_ELEMENT);
+    public static final VarHandle DW_ACTIVE_PROCESSOR_MASK_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.DW_ACTIVE_PROCESSOR_MASK_ELEMENT);
+    public static final VarHandle DW_NUMBER_OF_PROCESSORS_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.DW_NUMBER_OF_PROCESSORS_ELEMENT);
+    public static final VarHandle DW_PROCESSOR_TYPE_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.DW_PROCESSOR_TYPE_ELEMENT);
+    public static final VarHandle DW_ALLOCATION_GRANULARITY_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.DW_ALLOCATION_GRANULARITY_ELEMENT);
+    public static final VarHandle W_PROCESSOR_LEVEL_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.W_PROCESSOR_LEVEL_ELEMENT);
+    public static final VarHandle W_PROCESSOR_REVISION_VAR_HANDLE = SYSTEM_INFO_LAYOUT
+            .varHandle(System_Info.W_PROCESSOR_REVISION_ELEMENT);
 
     @Override
     public String toString() {
