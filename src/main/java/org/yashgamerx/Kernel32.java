@@ -47,7 +47,7 @@ public class Kernel32 {
         return (long) getTickCount64.invokeExact();
     }
 
-    public int GetFileAttributesW(String path) throws Throwable {
+    public int getFileAttributesW(String path) throws Throwable {
         byte[] bytes = (path + "\0").getBytes(StandardCharsets.UTF_16LE);
 
         MemorySegment pathSegment = arena.allocate(bytes.length);
