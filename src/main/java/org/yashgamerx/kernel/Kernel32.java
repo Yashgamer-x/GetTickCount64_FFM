@@ -19,6 +19,18 @@ public class Kernel32 {
     private final MethodHandle getLogicalDrives;
     private final MethodHandle getSystemInfo;
 
+    private static final MemoryLayout PROCESSOR_ARCHITECTURE_LAYOUT =
+            MemoryLayout.structLayout(
+                    ValueLayout.JAVA_SHORT.withName("wProcessorArchitecture"),
+                    ValueLayout.JAVA_SHORT.withName("wReserved")
+            );
+
+    private static final MemoryLayout OEM_LAYOUT =
+            MemoryLayout.unionLayout(
+                    ValueLayout.JAVA_INT.withName("dwOemId"),
+                    PROCESSOR_ARCHITECTURE_LAYOUT.withName("processorArchitecture")
+            ).withName("oemId");
+
     public Kernel32(Arena arena) {
         this.arena = arena;
         this.kernel32 = SymbolLookup.libraryLookup(
@@ -88,11 +100,6 @@ public class Kernel32 {
     }
 
     public System_Info getSystemInfo() throws Throwable {
-        final var OEM_LAYOUT = MemoryLayout.unionLayout(
-                ValueLayout.JAVA_INT.withName("dwOemId"),
-                ValueLayout.JAVA_SHORT.withName("wProcessorArchitecture"),
-                ValueLayout.JAVA_SHORT.withName("wReserved")
-        ).withName("oemId");
         MemoryLayout SYSTEM_INFO_LAYOUT = MemoryLayout.structLayout(
                 OEM_LAYOUT, // oemId
                 ValueLayout.JAVA_INT.withName("dwPageSize"),
@@ -110,38 +117,40 @@ public class Kernel32 {
 
         int dwOemId = (int) SYSTEM_INFO_LAYOUT
                 .varHandle(System_Info.oemIdElement, System_Info.dwOemIdElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         short wProcessorArchitecture = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.oemIdElement, System_Info.wProcessorArchitectureElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .varHandle(System_Info.oemIdElement, System_Info.processorArchitectureElement, System_Info.wProcessorArchitectureElement)
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         short wReserved = (short) SYSTEM_INFO_LAYOUT
-                .varHandle(System_Info.oemIdElement, System_Info.wReservedElement)
-                .get(SYSTEM_INFO_SEGMENT);
-        int dwPageSize = (int) SYSTEM_INFO_LAYOUT.varHandle(System_Info.dwPageSizeElement).get(SYSTEM_INFO_SEGMENT);
+                .varHandle(System_Info.oemIdElement, System_Info.processorArchitectureElement, System_Info.wReservedElement)
+                .get(SYSTEM_INFO_SEGMENT, 0L);
+        int dwPageSize = (int) SYSTEM_INFO_LAYOUT
+                .varHandle(System_Info.dwPageSizeElement)
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         MemorySegment lpMinimumApplicationAddress = (MemorySegment) SYSTEM_INFO_LAYOUT
                 .varHandle(System_Info.lpMinimumApplicationAddressElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         MemorySegment lpMaximumApplicationAddress = (MemorySegment) SYSTEM_INFO_LAYOUT
                 .varHandle(System_Info.lpMaximumApplicationAddressElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         long dwActiveProcessorMask = (long) SYSTEM_INFO_LAYOUT
                 .varHandle(System_Info.dwActiveProcessorMaskElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         int dwNumberOfProcessors = (int) SYSTEM_INFO_LAYOUT
                 .varHandle(System_Info.dwNumberOfProcessorsElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         int dwProcessorType = (int) SYSTEM_INFO_LAYOUT
                 .varHandle(System_Info.dwProcessorTypeElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         int dwAllocationGranularity = (int) SYSTEM_INFO_LAYOUT
                 .varHandle(System_Info.dwAllocationGranularityElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         short wProcessorLevel = (short) SYSTEM_INFO_LAYOUT
                 .varHandle(System_Info.wProcessorLevelElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .get(SYSTEM_INFO_SEGMENT, 0L);
         short wProcessorRevision = (short) SYSTEM_INFO_LAYOUT
                 .varHandle(System_Info.wProcessorRevisionElement)
-                .get(SYSTEM_INFO_SEGMENT);
+                .get(SYSTEM_INFO_SEGMENT, 0L);
 
         OemId oemId = getOemId(dwOemId, wProcessorArchitecture, wReserved);
 

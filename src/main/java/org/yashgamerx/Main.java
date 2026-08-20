@@ -12,6 +12,7 @@ public class Main {
             System.out.println(kernel32.getSystemInfo());
         } catch (Throwable e) {
             System.out.println(e.toString());
+            e.printStackTrace();
         }
     }
 }

@@ -20,6 +20,7 @@ public record System_Info(
 
     public static MemoryLayout.PathElement oemIdElement = MemoryLayout.PathElement.groupElement("oemId");
     public static MemoryLayout.PathElement dwOemIdElement = MemoryLayout.PathElement.groupElement("dwOemId");
+    public static MemoryLayout.PathElement processorArchitectureElement = MemoryLayout.PathElement.groupElement("processorArchitecture");
     public static MemoryLayout.PathElement wProcessorArchitectureElement = MemoryLayout.PathElement.groupElement("wProcessorArchitecture");
     public static MemoryLayout.PathElement wReservedElement = MemoryLayout.PathElement.groupElement("wReserved");
     public static MemoryLayout.PathElement dwPageSizeElement = MemoryLayout.PathElement.groupElement("dwPageSize");
