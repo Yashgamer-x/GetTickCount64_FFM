@@ -2,6 +2,7 @@ package org.yashgamerx.kernel;
 
 import org.yashgamerx.kernel.oem.OemId;
 import org.yashgamerx.kernel.oem.ProcessorArchitecture;
+import org.yashgamerx.kernel.oem.System_Info;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
@@ -17,6 +18,7 @@ public class Kernel32 {
     private final MethodHandle getLogicalDrives;
     private final MethodHandle getSystemInfo;
     private final MethodHandle getNativeSystemInfo;
+    private final MethodHandle getCurrentProcess;
 
     public Kernel32(Arena arena) {
         this.arena = arena;
@@ -29,6 +31,7 @@ public class Kernel32 {
         getLogicalDrives = createGetLogicalDrives();
         getSystemInfo = createGetSystemInfo();
         getNativeSystemInfo = createGetNativeSystemInfo();
+        getCurrentProcess = createGetCurrentProcess();
     }
 
     private MethodHandle createGetTickCount64() {
@@ -76,6 +79,15 @@ public class Kernel32 {
         return linker.downcallHandle(
                 getSystemInfo_addr,
                 FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)
+        );
+    }
+
+    private MethodHandle createGetCurrentProcess() {
+        MemorySegment getCurrentProcess_addr = kernel32.find("GetCurrentProcess")
+                .orElseThrow();
+        return linker.downcallHandle(
+                getCurrentProcess_addr,
+                FunctionDescriptor.of(ValueLayout.ADDRESS)
         );
     }
 

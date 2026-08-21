@@ -1,6 +1,4 @@
-package org.yashgamerx.kernel;
-
-import org.yashgamerx.kernel.oem.OemId;
+package org.yashgamerx.kernel.oem;
 
 import java.lang.foreign.AddressLayout;
 import java.lang.foreign.MemoryLayout;
