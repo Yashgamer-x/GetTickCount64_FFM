@@ -19,6 +19,7 @@ public class Kernel32 {
     private final MethodHandle getSystemInfo;
     private final MethodHandle getNativeSystemInfo;
     private final MethodHandle getCurrentProcess;
+    private final MethodHandle getProcessId;
 
     public Kernel32(Arena arena) {
         this.arena = arena;
@@ -32,6 +33,7 @@ public class Kernel32 {
         getSystemInfo = createGetSystemInfo();
         getNativeSystemInfo = createGetNativeSystemInfo();
         getCurrentProcess = createGetCurrentProcess();
+        getProcessId = createGetProcessId();
     }
 
     private MethodHandle createGetTickCount64() {
@@ -88,6 +90,15 @@ public class Kernel32 {
         return linker.downcallHandle(
                 getCurrentProcess_addr,
                 FunctionDescriptor.of(ValueLayout.ADDRESS)
+        );
+    }
+
+    private MethodHandle createGetProcessId() {
+        MemorySegment getProcessId_addr = kernel32.find("GetProcessId")
+                .orElseThrow();
+        return linker.downcallHandle(
+                getProcessId_addr,
+                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS)
         );
     }
 
@@ -190,5 +201,13 @@ public class Kernel32 {
                                 "Unknown processor architecture: " +Short.toUnsignedInt(wProcessorArchitecture)
                         );
             };
+    }
+
+    public MemorySegment getCurrentProcess() throws Throwable {
+        return (MemorySegment) getCurrentProcess.invokeExact();
+    }
+
+    public int getProcessId(MemorySegment process) throws Throwable {
+        return (int) getProcessId.invokeExact(process);
     }
 }

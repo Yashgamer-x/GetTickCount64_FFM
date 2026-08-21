@@ -9,7 +9,8 @@ public class Main {
     static void main() {
         try (Arena arena = Arena.ofConfined()) {
             Kernel32 kernel32 = new Kernel32(arena);
-            System.out.println(kernel32.getNativeSystemInfo());
+            var process = kernel32.getCurrentProcess();
+            System.out.println(kernel32.getProcessId(process));
         } catch (Throwable e) {
             System.out.println(e.toString());
             e.printStackTrace();
