@@ -20,6 +20,7 @@ public class Kernel32 {
     private final MethodHandle getNativeSystemInfo;
     private final MethodHandle getCurrentProcess;
     private final MethodHandle getProcessId;
+    private final MethodHandle getProcessTimes;
 
     public Kernel32(Arena arena) {
         this.arena = arena;
@@ -34,6 +35,7 @@ public class Kernel32 {
         getNativeSystemInfo = createGetNativeSystemInfo();
         getCurrentProcess = createGetCurrentProcess();
         getProcessId = createGetProcessId();
+        getProcessTimes = createGetProcessTimes();
     }
 
     private MethodHandle createGetTickCount64() {
@@ -99,6 +101,22 @@ public class Kernel32 {
         return linker.downcallHandle(
                 getProcessId_addr,
                 FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS)
+        );
+    }
+
+    private MethodHandle createGetProcessTimes() {
+        MemorySegment getProcessTimes_addr = kernel32.find("GetProcessTimes")
+                .orElseThrow();
+        return linker.downcallHandle(
+                getProcessTimes_addr,
+                FunctionDescriptor.of(
+                        ValueLayout.JAVA_INT, // BOOL is a typedef for INT in C
+                        ValueLayout.ADDRESS,  // HANDLE - hprocess;
+                        ValueLayout.ADDRESS,  // LPFILETIME - lpCreationTime
+                        ValueLayout.ADDRESS,  // LPFILETIME - lpExitTime
+                        ValueLayout.ADDRESS,  // LPFILETIME - lpKernelTime
+                        ValueLayout.ADDRESS   // LPFILETIME - lpUserTime
+                )
         );
     }
 
