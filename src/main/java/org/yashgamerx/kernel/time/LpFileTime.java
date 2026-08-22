@@ -6,8 +6,8 @@ import java.lang.foreign.ValueLayout;
 import java.lang.invoke.VarHandle;
 
 public record LpFileTime(
-        String dwLowDateTime,
-        String dwHighDateTime
+        int  dwLowDateTime,
+        int  dwHighDateTime
 ) {
     // Value Layouts
     public static final ValueLayout.OfInt DW_LOW_DATE_TIME_VALUE = ValueLayout.JAVA_INT.withName("dwLowDateTime");
@@ -30,17 +30,27 @@ public record LpFileTime(
     public static LpFileTime of(MemorySegment segment) {
         int dwLowDateTime = (int) DW_LOW_DATE_TIME_VAR_HANDLE.get(segment, 0L);
         int dwHighDateTime = (int) DW_HIGH_DATE_TIME_VAR_HANDLE.get(segment, 0L);
-        return new LpFileTime(
-                Integer.toUnsignedString(dwLowDateTime),
-                Integer.toUnsignedString(dwHighDateTime)
-        );
+        return new LpFileTime(dwLowDateTime, dwHighDateTime);
+    }
+
+    public long lowUnsigned() {
+        return Integer.toUnsignedLong(dwLowDateTime);
+    }
+
+    public long highUnsigned() {
+        return Integer.toUnsignedLong(dwHighDateTime);
+    }
+
+    public long toMilliseconds() {
+        long value = (highUnsigned() << 32) | lowUnsigned();
+        return value / 10_000;
     }
 
     @Override
     public String toString() {
         return "LpFileTime{" +
-                "dwLowDateTime=" + dwLowDateTime +
-                ", dwHighDateTime=" + dwHighDateTime +
+                "dwLowDateTime=" + lowUnsigned() +
+                ", dwHighDateTime=" + highUnsigned() +
                 '}';
     }
 }

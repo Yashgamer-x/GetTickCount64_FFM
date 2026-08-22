@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.yashgamerx.kernel.Kernel32;
 import org.yashgamerx.kernel.time.LpFileTime;
+import org.yashgamerx.kernel.time.SystemTime;
 
 import java.lang.foreign.Arena;
 
@@ -80,6 +81,149 @@ public class Kernel32Test {
             System.out.println(lpUserTime);
         } catch (Throwable e) {
             Assertions.fail();
+        }
+    }
+
+    @Test
+    public void testCreationSystemTime() {
+        try (Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+
+            var process = kernel32.getCurrentProcess();
+
+            var creationMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var exitMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var kernelMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var userMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+
+            kernel32.getProcessTimes(
+                    process,
+                    creationMemory,
+                    exitMemory,
+                    kernelMemory,
+                    userMemory
+            );
+
+            var systemTimeMemory = arena.allocate(SystemTime.SYSTEM_TIME_LAYOUT);
+            int result = kernel32.fileTimeToSystemTime(
+                    creationMemory,
+                    systemTimeMemory
+            );
+
+            Assertions.assertNotEquals(0, result);
+
+            var systemTime = SystemTime.of(systemTimeMemory);
+
+            Assertions.assertTrue(systemTime.wYear() >= 2025);
+            Assertions.assertTrue(systemTime.wMonth() >= 1 && systemTime.wMonth() <= 12);
+            Assertions.assertTrue(systemTime.wDay() >= 1 && systemTime.wDay() <= 31);
+            Assertions.assertTrue(systemTime.wHour() >= 0 && systemTime.wHour() <= 23);
+            Assertions.assertTrue(systemTime.wMinute() >= 0 && systemTime.wMinute() <= 59);
+            Assertions.assertTrue(systemTime.wSecond() >= 0 && systemTime.wSecond() <= 59);
+            Assertions.assertTrue(systemTime.wMillisecond() >= 0 && systemTime.wMillisecond() <= 999);
+
+            System.out.println(systemTime);
+
+        } catch (Throwable e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    public void testUserTime() {
+        try (Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+
+            var process = kernel32.getCurrentProcess();
+
+            var creationMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var exitMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var kernelMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var userMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+
+            kernel32.getProcessTimes(
+                    process,
+                    creationMemory,
+                    exitMemory,
+                    kernelMemory,
+                    userMemory
+            );
+
+            var userTime = LpFileTime.of(userMemory);
+
+            Assertions.assertTrue(userTime.toMilliseconds() >= 0);
+
+            System.out.println(
+                    "User CPU Time: " + userTime.toMilliseconds() + " ms"
+            );
+
+        } catch (Throwable e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    public void testKernelTime() {
+        try (Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+
+            var process = kernel32.getCurrentProcess();
+
+            var creationMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var exitMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var kernelMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var userMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+
+            kernel32.getProcessTimes(
+                    process,
+                    creationMemory,
+                    exitMemory,
+                    kernelMemory,
+                    userMemory
+            );
+
+            var kernelTime = LpFileTime.of(kernelMemory);
+
+            Assertions.assertTrue(kernelTime.toMilliseconds() >= 0);
+
+            System.out.println(
+                    "Kernel CPU Time: " + kernelTime.toMilliseconds() + " ms"
+            );
+
+        } catch (Throwable e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    public void testExitTime() {
+        try (Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+
+            var process = kernel32.getCurrentProcess();
+
+            var creationMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var exitMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var kernelMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            var userMemory = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+
+            kernel32.getProcessTimes(
+                    process,
+                    creationMemory,
+                    exitMemory,
+                    kernelMemory,
+                    userMemory
+            );
+
+            var exitTime = LpFileTime.of(exitMemory);
+
+            Assertions.assertEquals(0, exitTime.dwLowDateTime());
+            Assertions.assertEquals(0, exitTime.dwHighDateTime());
+
+            System.out.println("Exit Time: " + exitTime);
+
+        } catch (Throwable e) {
+            Assertions.fail(e);
         }
     }
 
