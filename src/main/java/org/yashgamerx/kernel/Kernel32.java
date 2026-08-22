@@ -1,5 +1,7 @@
 package org.yashgamerx.kernel;
 
+import org.yashgamerx.kernel.filetime.GetProcessTimesOutput;
+import org.yashgamerx.kernel.filetime.LpFileTime;
 import org.yashgamerx.kernel.oem.OemId;
 import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
@@ -227,5 +229,21 @@ public class Kernel32 {
 
     public int getProcessId(MemorySegment process) throws Throwable {
         return (int) getProcessId.invokeExact(process);
+    }
+
+    public int getProcessTimes(
+            MemorySegment process,
+            MemorySegment lpCreationTimeMemorySegment,
+            MemorySegment lpExitTimeMemorySegment,
+            MemorySegment lpKernelTimeMemorySegment,
+            MemorySegment lpUserTimeMemorySegment
+    ) throws Throwable {
+        return (int) getProcessTimes.invokeExact(
+                process,
+                lpCreationTimeMemorySegment,
+                lpExitTimeMemorySegment,
+                lpKernelTimeMemorySegment,
+                lpUserTimeMemorySegment
+        );
     }
 }
