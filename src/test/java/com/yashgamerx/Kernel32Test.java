@@ -3,7 +3,7 @@ package com.yashgamerx;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.yashgamerx.kernel.Kernel32;
-import org.yashgamerx.kernel.filetime.LpFileTime;
+import org.yashgamerx.kernel.time.LpFileTime;
 
 import java.lang.foreign.Arena;
 

@@ -1,8 +1,8 @@
 package org.yashgamerx;
 
-import org.yashgamerx.advapi.Advapi32;
 import org.yashgamerx.kernel.Kernel32;
-import org.yashgamerx.kernel.filetime.LpFileTime;
+import org.yashgamerx.kernel.time.LpFileTime;
+import org.yashgamerx.kernel.time.SystemTime;
 
 import java.lang.foreign.*;
 
@@ -15,22 +15,23 @@ public class Main {
             var lpExitTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
             var lpKernelTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
             var lpUserTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
-            var processTimes = kernel32.getProcessTimes(
+            var _ = kernel32.getProcessTimes(
                     process,
                     lpCreationTimeMemorySegment,
                     lpExitTimeMemorySegment,
                     lpKernelTimeMemorySegment,
                     lpUserTimeMemorySegment
             );
-            var lpCreationTime = LpFileTime.of(lpCreationTimeMemorySegment);
-            var lpExitTime = LpFileTime.of(lpExitTimeMemorySegment);
-            var lpKernelTime = LpFileTime.of(lpKernelTimeMemorySegment);
-            var lpUserTime = LpFileTime.of(lpUserTimeMemorySegment);
-            System.out.println(processTimes);
-            System.out.println(lpCreationTime);
-            System.out.println(lpExitTime);
-            System.out.println(lpKernelTime);
-            System.out.println(lpUserTime);
+
+
+            var lpCreationSystemTime = arena.allocate(SystemTime.SYSTEM_TIME_LAYOUT);
+            var _ = kernel32.fileTimeToSystemTime(
+                    lpCreationTimeMemorySegment,
+                    lpCreationSystemTime
+            );
+            var lpCreationTime = SystemTime.of(lpCreationSystemTime);
+            System.out.println("Creation "+lpCreationTime);
+
         } catch (Throwable e) {
             System.out.println(e.toString());
             e.printStackTrace();

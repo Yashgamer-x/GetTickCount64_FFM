@@ -1,4 +1,4 @@
-package org.yashgamerx.kernel.filetime;
+package org.yashgamerx.kernel.time;
 
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;

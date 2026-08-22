@@ -3,6 +3,7 @@ package org.yashgamerx.kernel;
 import org.yashgamerx.kernel.oem.OemId;
 import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
+import org.yashgamerx.kernel.time.SystemTime;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
@@ -21,6 +22,7 @@ public class Kernel32 {
     private final MethodHandle getCurrentProcess;
     private final MethodHandle getProcessId;
     private final MethodHandle getProcessTimes;
+    private final MethodHandle fileTimeToSystemTime;
 
     public Kernel32(Arena arena) {
         this.arena = arena;
@@ -36,6 +38,7 @@ public class Kernel32 {
         getCurrentProcess = createGetCurrentProcess();
         getProcessId = createGetProcessId();
         getProcessTimes = createGetProcessTimes();
+        fileTimeToSystemTime = createFileTimeToSystemTime();
     }
 
     private MethodHandle createGetTickCount64() {
@@ -101,6 +104,19 @@ public class Kernel32 {
         return linker.downcallHandle(
                 getProcessId_addr,
                 FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS)
+        );
+    }
+
+    private MethodHandle createFileTimeToSystemTime() {
+        MemorySegment fileTimeToSystemTime_addr = kernel32.find("FileTimeToSystemTime")
+                .orElseThrow();
+        return linker.downcallHandle(
+                fileTimeToSystemTime_addr,
+                FunctionDescriptor.of(
+                        ValueLayout.JAVA_INT, // BOOL
+                        ValueLayout.ADDRESS, // FILETIME - *lpFileTime
+                        ValueLayout.ADDRESS // LPSYSTEMTIM lpSystemTime
+                )
         );
     }
 
@@ -242,6 +258,16 @@ public class Kernel32 {
                 lpExitTimeMemorySegment,
                 lpKernelTimeMemorySegment,
                 lpUserTimeMemorySegment
+        );
+    }
+
+    public int fileTimeToSystemTime(
+            MemorySegment lpFileTime,
+            MemorySegment lpSystemTime
+    ) throws Throwable {
+        return (int) fileTimeToSystemTime.invokeExact(
+                lpFileTime,
+                lpSystemTime
         );
     }
 }
