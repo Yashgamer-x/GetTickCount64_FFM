@@ -16,8 +16,8 @@ public class Kernel32Test {
             Kernel32 kernel32 = new Kernel32(arena);
             long tickCount = kernel32.getTickCount64();
             Assertions.assertNotEquals(0, tickCount);
-        } catch (Throwable _) {
-            Assertions.fail();
+        } catch (Throwable e) {
+            Assertions.fail(e);
         }
     }
 
@@ -28,7 +28,7 @@ public class Kernel32Test {
             int perm = kernel32.getFileAttributesW("C:\\Windows");
             Assertions.assertEquals(16, perm);
         } catch (Throwable e) {
-            Assertions.fail();
+            Assertions.fail(e);
         }
     }
 
@@ -39,7 +39,7 @@ public class Kernel32Test {
             int drives = kernel32.getLogicalDrives();
             System.out.println(Integer.toBinaryString(drives));
         } catch (Throwable e) {
-            Assertions.fail();
+            Assertions.fail(e);
         }
     }
 
@@ -80,7 +80,7 @@ public class Kernel32Test {
             System.out.println(lpKernelTime);
             System.out.println(lpUserTime);
         } catch (Throwable e) {
-            Assertions.fail();
+            Assertions.fail(e);
         }
     }
 
