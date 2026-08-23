@@ -5,6 +5,7 @@ import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
 import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
 import org.yashgamerx.kernel.fileapi.GetLogicalDrives;
+import org.yashgamerx.kernel.sysinfoapi.GetCurrentProcess;
 import org.yashgamerx.kernel.sysinfoapi.GetNativeSystemInfo;
 import org.yashgamerx.kernel.sysinfoapi.GetSystemInfo;
 import org.yashgamerx.kernel.sysinfoapi.GetTickCount64;
@@ -22,7 +23,7 @@ public class Kernel32 {
     private final GetLogicalDrives getLogicalDrives;
     private final GetSystemInfo getSystemInfo;
     private final GetNativeSystemInfo getNativeSystemInfo;
-    private final MethodHandle getCurrentProcess;
+    private final GetCurrentProcess getCurrentProcess;
     private final MethodHandle getProcessId;
     private final MethodHandle getProcessTimes;
     private final MethodHandle fileTimeToSystemTime;
@@ -39,20 +40,11 @@ public class Kernel32 {
         getLogicalDrives = new GetLogicalDrives(kernel32);
         getSystemInfo = new GetSystemInfo(arena, kernel32);
         getNativeSystemInfo = new GetNativeSystemInfo(arena, kernel32);
-        getCurrentProcess = createGetCurrentProcess();
+        getCurrentProcess = new GetCurrentProcess(kernel32);
         getProcessId = createGetProcessId();
         getProcessTimes = createGetProcessTimes();
         fileTimeToSystemTime = createFileTimeToSystemTime();
         getSystemTimeAsFileTime = createGetSystemTimeAsFileTime();
-    }
-
-    private MethodHandle createGetCurrentProcess() {
-        MemorySegment getCurrentProcess_addr = kernel32.find("GetCurrentProcess")
-                .orElseThrow();
-        return linker.downcallHandle(
-                getCurrentProcess_addr,
-                FunctionDescriptor.of(ValueLayout.ADDRESS)
-        );
     }
 
     private MethodHandle createGetProcessId() {
@@ -123,7 +115,7 @@ public class Kernel32 {
     }
 
     public MemorySegment getCurrentProcess() throws Throwable {
-        return (MemorySegment) getCurrentProcess.invokeExact();
+        return getCurrentProcess.invoke();
     }
 
     public int getProcessId(MemorySegment process) throws Throwable {
