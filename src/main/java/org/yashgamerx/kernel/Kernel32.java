@@ -3,6 +3,8 @@ package org.yashgamerx.kernel;
 import org.yashgamerx.kernel.oem.OemId;
 import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
+import org.yashgamerx.kernel.sysinfoapi.GetTickCount64;
+
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 import java.nio.charset.StandardCharsets;
@@ -12,7 +14,7 @@ public class Kernel32 {
     private final Arena arena;
     private final SymbolLookup kernel32;
     private final Linker linker = Linker.nativeLinker();
-    private final MethodHandle getTickCount64;
+    private final GetTickCount64 getTickCount64;
     private final MethodHandle getFileAttributeW;
     private final MethodHandle getLogicalDrives;
     private final MethodHandle getSystemInfo;
@@ -29,7 +31,7 @@ public class Kernel32 {
                 "kernel32.dll", arena
         );
 
-        getTickCount64 = createGetTickCount64();
+        getTickCount64 = new GetTickCount64(kernel32);
         getFileAttributeW = createGetFileAttributeW();
         getLogicalDrives = createGetLogicalDrives();
         getSystemInfo = createGetSystemInfo();
@@ -146,7 +148,7 @@ public class Kernel32 {
     }
 
     public long getTickCount64() throws Throwable {
-        return (long) getTickCount64.invokeExact();
+        return getTickCount64.invoke();
     }
 
     public int getFileAttributesW(String path) throws Throwable {
