@@ -4,6 +4,7 @@ import org.yashgamerx.kernel.oem.OemId;
 import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
 import org.yashgamerx.kernel.sysinfoapi.GetFileAttributeW;
+import org.yashgamerx.kernel.sysinfoapi.GetLogicalDrives;
 import org.yashgamerx.kernel.sysinfoapi.GetTickCount64;
 
 import java.lang.foreign.*;
@@ -16,7 +17,7 @@ public class Kernel32 {
     private final Linker linker = Linker.nativeLinker();
     private final GetTickCount64 getTickCount64;
     private final GetFileAttributeW getFileAttributeW;
-    private final MethodHandle getLogicalDrives;
+    private final GetLogicalDrives getLogicalDrives;
     private final MethodHandle getSystemInfo;
     private final MethodHandle getNativeSystemInfo;
     private final MethodHandle getCurrentProcess;
@@ -33,7 +34,7 @@ public class Kernel32 {
 
         getTickCount64 = new GetTickCount64(kernel32);
         getFileAttributeW = new GetFileAttributeW(arena, kernel32);
-        getLogicalDrives = createGetLogicalDrives();
+        getLogicalDrives = new GetLogicalDrives(kernel32);
         getSystemInfo = createGetSystemInfo();
         getNativeSystemInfo = createGetNativeSystemInfo();
         getCurrentProcess = createGetCurrentProcess();
@@ -41,15 +42,6 @@ public class Kernel32 {
         getProcessTimes = createGetProcessTimes();
         fileTimeToSystemTime = createFileTimeToSystemTime();
         getSystemTimeAsFileTime = createGetSystemTimeAsFileTime();
-    }
-
-    private MethodHandle createGetLogicalDrives() {
-        MemorySegment getLogicalDrives_addr = kernel32.find("GetLogicalDrives")
-                .orElseThrow();
-        return linker.downcallHandle(
-                getLogicalDrives_addr,
-                FunctionDescriptor.of(ValueLayout.JAVA_INT)
-        );
     }
 
     private MethodHandle createGetSystemInfo(){
@@ -135,7 +127,7 @@ public class Kernel32 {
     }
 
     public int getLogicalDrives() throws Throwable {
-        return (int) getLogicalDrives.invokeExact();
+        return getLogicalDrives.invoke();
     }
 
     public System_Info getSystemInfo() throws Throwable {
