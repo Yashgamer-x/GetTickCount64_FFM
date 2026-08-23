@@ -7,6 +7,7 @@ import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
 import org.yashgamerx.kernel.fileapi.GetLogicalDrives;
 import org.yashgamerx.kernel.processthreadsapi.GetProcessTimes;
 import org.yashgamerx.kernel.sysinfoapi.*;
+import org.yashgamerx.kernel.timezoneapi.FileTimeToSystemTime;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
@@ -23,7 +24,7 @@ public class Kernel32 {
     private final GetCurrentProcess getCurrentProcess;
     private final GetProcessId getProcessId;
     private final GetProcessTimes getProcessTimes;
-    private final MethodHandle fileTimeToSystemTime;
+    private final FileTimeToSystemTime fileTimeToSystemTime;
     private final MethodHandle getSystemTimeAsFileTime;
 
     public Kernel32(Arena arena) {
@@ -39,37 +40,8 @@ public class Kernel32 {
         getCurrentProcess = new GetCurrentProcess(kernel32);
         getProcessId = new GetProcessId(kernel32);
         getProcessTimes = new GetProcessTimes(kernel32);
-        fileTimeToSystemTime = createFileTimeToSystemTime();
+        fileTimeToSystemTime = new FileTimeToSystemTime(kernel32);
         getSystemTimeAsFileTime = createGetSystemTimeAsFileTime();
-    }
-
-    private MethodHandle createFileTimeToSystemTime() {
-        MemorySegment fileTimeToSystemTime_addr = kernel32.find("FileTimeToSystemTime")
-                .orElseThrow();
-        return linker.downcallHandle(
-                fileTimeToSystemTime_addr,
-                FunctionDescriptor.of(
-                        ValueLayout.JAVA_INT, // BOOL
-                        ValueLayout.ADDRESS, // FILETIME - *lpFileTime
-                        ValueLayout.ADDRESS // LPSYSTEMTIM lpSystemTime
-                )
-        );
-    }
-
-    private MethodHandle createGetProcessTimes() {
-        MemorySegment getProcessTimes_addr = kernel32.find("GetProcessTimes")
-                .orElseThrow();
-        return linker.downcallHandle(
-                getProcessTimes_addr,
-                FunctionDescriptor.of(
-                        ValueLayout.JAVA_INT, // BOOL is a typedef for INT in C
-                        ValueLayout.ADDRESS,  // HANDLE - hprocess;
-                        ValueLayout.ADDRESS,  // LPFILETIME - lpCreationTime
-                        ValueLayout.ADDRESS,  // LPFILETIME - lpExitTime
-                        ValueLayout.ADDRESS,  // LPFILETIME - lpKernelTime
-                        ValueLayout.ADDRESS   // LPFILETIME - lpUserTime
-                )
-        );
     }
 
     private MethodHandle createGetSystemTimeAsFileTime() {
@@ -128,14 +100,8 @@ public class Kernel32 {
     /// @param lpFileTime \[IN] FILETIME -> lpFileTime is a pointer to a FILETIME structure that contains the time to be converted.
     /// @param lpSystemTime \[OUT] LPSYSTEMTIM -> lpSystemTime is a pointer to a SYSTEMTIME structure that receives the converted time.
     /// @return BOOL -> int in java result is either 0 on failed execution or 1 on successful execution
-    public int fileTimeToSystemTime(
-            MemorySegment lpFileTime,
-            MemorySegment lpSystemTime
-    ) throws Throwable {
-        return (int) fileTimeToSystemTime.invokeExact(
-                lpFileTime,
-                lpSystemTime
-        );
+    public int fileTimeToSystemTime(MemorySegment lpFileTime, MemorySegment lpSystemTime) throws Throwable {
+        return fileTimeToSystemTime.invoke(lpFileTime, lpSystemTime);
     }
 
     public void getSystemTimeAsFileTime(MemorySegment lpSystemTimeAsFileTime) throws Throwable {
