@@ -2,6 +2,7 @@ package org.yashgamerx.kernel;
 
 import org.yashgamerx.kernel.errhandlingapi.GetLastError;
 import org.yashgamerx.kernel.errhandlingapi.SetLastError;
+import org.yashgamerx.kernel.fileapi.GetTempPathW;
 import org.yashgamerx.kernel.libloaderapi.GetModuleFileNameW;
 import org.yashgamerx.kernel.oem.System_Info;
 import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
@@ -34,6 +35,7 @@ public class Kernel32 {
     private final GetComputerNameW getComputerNameW;
     private final GetSystemDirectoryW getSystemDirectoryW;
     private final GetModuleFileNameW getModuleFileNameW;
+    private final GetTempPathW getTempPathW;
 
     public Kernel32(Arena arena) {
         this.kernel32 = SymbolLookup.libraryLookup(
@@ -56,6 +58,7 @@ public class Kernel32 {
         getComputerNameW = new GetComputerNameW(kernel32);
         getSystemDirectoryW = new GetSystemDirectoryW(kernel32);
         getModuleFileNameW = new GetModuleFileNameW(kernel32);
+        getTempPathW = new GetTempPathW(kernel32);
     }
 
     public long getTickCount64() throws Throwable {
@@ -135,5 +138,9 @@ public class Kernel32 {
 
     public int getModuleFileNameW(MemorySegment hModule, MemorySegment lpFilename, int nSize) throws Throwable {
         return getModuleFileNameW.invoke(hModule, lpFilename, nSize);
+    }
+
+    public int getTempPathW(int nBufferLength, MemorySegment lpBuffer) throws Throwable {
+        return getTempPathW.invoke(nBufferLength, lpBuffer);
     }
 }
