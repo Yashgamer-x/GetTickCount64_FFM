@@ -7,6 +7,8 @@ import org.yashgamerx.kernel.time.LpFileTime;
 import org.yashgamerx.kernel.time.SystemTime;
 
 import java.lang.foreign.Arena;
+import java.lang.foreign.MemorySegment;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -316,6 +318,29 @@ public class Kernel32Test {
             assertEquals(-1, perm);
             var lastError = kernel32.getLastError();
             assertEquals(2, lastError);
+        } catch (Throwable e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    public void testGetEnvironmentVariableW() {
+        try (Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+
+            final String name = "USERNAME";
+            int bufferSize = 32_767;
+
+            MemorySegment lpNameSegment = arena.allocateFrom(name + "\0", StandardCharsets.UTF_16LE);
+            MemorySegment lpBufferSegment = arena.allocate((long) bufferSize * 2);
+            int length = kernel32.getEnvironmentVariable(lpNameSegment, lpBufferSegment, bufferSize);
+
+            String value = lpBufferSegment.getString(0, StandardCharsets.UTF_16LE);
+            if (length == 0) {
+                fail("Unable to get the environment variable");
+            }
+            System.out.println("Length: " + length);
+            System.out.println("Value: " + value);
         } catch (Throwable e) {
             fail(e);
         }
