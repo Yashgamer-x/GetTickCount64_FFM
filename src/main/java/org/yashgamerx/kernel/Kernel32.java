@@ -2,6 +2,7 @@ package org.yashgamerx.kernel;
 
 import org.yashgamerx.kernel.errhandlingapi.GetLastError;
 import org.yashgamerx.kernel.errhandlingapi.SetLastError;
+import org.yashgamerx.kernel.libloaderapi.GetModuleFileNameW;
 import org.yashgamerx.kernel.oem.System_Info;
 import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
 import org.yashgamerx.kernel.fileapi.GetLogicalDrives;
@@ -32,6 +33,7 @@ public class Kernel32 {
     private final GetEnvironmentVariableW getEnvironmentVariableW;
     private final GetComputerNameW getComputerNameW;
     private final GetSystemDirectoryW getSystemDirectoryW;
+    private final GetModuleFileNameW getModuleFileNameW;
 
     public Kernel32(Arena arena) {
         this.kernel32 = SymbolLookup.libraryLookup(
@@ -53,6 +55,7 @@ public class Kernel32 {
         getEnvironmentVariableW = new GetEnvironmentVariableW(kernel32);
         getComputerNameW = new GetComputerNameW(kernel32);
         getSystemDirectoryW = new GetSystemDirectoryW(kernel32);
+        getModuleFileNameW = new GetModuleFileNameW(kernel32);
     }
 
     public long getTickCount64() throws Throwable {
@@ -128,5 +131,9 @@ public class Kernel32 {
 
     public int getSystemDirectoryW(MemorySegment lpBuffer, int size) throws Throwable {
         return getSystemDirectoryW.invoke(lpBuffer, size);
+    }
+
+    public int getModuleFileNameW(MemorySegment hModule, MemorySegment lpFilename, int nSize) throws Throwable {
+        return getModuleFileNameW.invoke(hModule, lpFilename, nSize);
     }
 }
