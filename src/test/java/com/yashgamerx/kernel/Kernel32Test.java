@@ -408,4 +408,26 @@ public class Kernel32Test {
             fail(e);
         }
     }
+
+    @Test
+    public void testGetTempPathW() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            int nBufferLength = 2048;
+            MemorySegment lpBuffer = arena.allocate((long)nBufferLength*2);
+            int result = kernel32.getTempPathW(nBufferLength, lpBuffer);
+
+            if(result == 0) {
+                fail("Unable to get the temp path");
+            } else if (result > nBufferLength) {
+                fail("Buffer length is too small");
+            } else {
+                String tempPath = lpBuffer.getString(0, StandardCharsets.UTF_16LE);
+                System.out.println("Temp Path: " + tempPath);
+                System.out.println("Temp Path Length: " + result);
+            }
+        } catch (Throwable e) {
+            fail(e);
+        }
+    }
 }
