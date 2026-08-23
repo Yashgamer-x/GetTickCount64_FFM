@@ -419,7 +419,7 @@ public class Kernel32Test {
 
             if(result == 0) {
                 fail("Unable to get the temp path");
-            } else if (result > nBufferLength) {
+            } else if (result >= nBufferLength) {
                 fail("Buffer length is too small");
             } else {
                 String tempPath = lpBuffer.getString(0, StandardCharsets.UTF_16LE);
