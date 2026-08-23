@@ -370,4 +370,21 @@ public class Kernel32Test {
         }
     }
 
+    @Test
+    public void testGetSystemDirectoryW() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            int characterSize = 2048;
+            MemorySegment lpBuffer = arena.allocate((long)characterSize*2);
+            int result = kernel32.getSystemDirectoryW(lpBuffer, characterSize);
+            if (result == 0) {
+                fail("Unable to get the system directory");
+            }
+            String systemDirectory = lpBuffer.getString(0, StandardCharsets.UTF_16LE);
+            assertNotNull(systemDirectory);
+            System.out.println("System Directory: " + systemDirectory);
+        } catch (Throwable e) {
+            fail(e);
+        }
+    }
 }

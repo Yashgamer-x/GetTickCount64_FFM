@@ -31,6 +31,7 @@ public class Kernel32 {
     private final SetLastError setLastError;
     private final GetEnvironmentVariableW getEnvironmentVariableW;
     private final GetComputerNameW getComputerNameW;
+    private final GetSystemDirectoryW getSystemDirectoryW;
 
     public Kernel32(Arena arena) {
         this.kernel32 = SymbolLookup.libraryLookup(
@@ -51,6 +52,7 @@ public class Kernel32 {
         setLastError = new SetLastError(kernel32);
         getEnvironmentVariableW = new GetEnvironmentVariableW(kernel32);
         getComputerNameW = new GetComputerNameW(kernel32);
+        getSystemDirectoryW = new GetSystemDirectoryW(kernel32);
     }
 
     public long getTickCount64() throws Throwable {
@@ -122,5 +124,9 @@ public class Kernel32 {
 
     public int getComputerNameW(MemorySegment lpBuffer, MemorySegment size) throws Throwable {
         return getComputerNameW.invoke(lpBuffer, size);
+    }
+
+    public int getSystemDirectoryW(MemorySegment lpBuffer, int size) throws Throwable {
+        return getSystemDirectoryW.invoke(lpBuffer, size);
     }
 }
