@@ -5,6 +5,7 @@ import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
 import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
 import org.yashgamerx.kernel.fileapi.GetLogicalDrives;
+import org.yashgamerx.kernel.processthreadsapi.GetProcessTimes;
 import org.yashgamerx.kernel.sysinfoapi.*;
 
 import java.lang.foreign.*;
@@ -12,7 +13,6 @@ import java.lang.invoke.MethodHandle;
 
 public class Kernel32 {
 
-    private final Arena arena;
     private final SymbolLookup kernel32;
     private final Linker linker = Linker.nativeLinker();
     private final GetTickCount64 getTickCount64;
@@ -22,12 +22,11 @@ public class Kernel32 {
     private final GetNativeSystemInfo getNativeSystemInfo;
     private final GetCurrentProcess getCurrentProcess;
     private final GetProcessId getProcessId;
-    private final MethodHandle getProcessTimes;
+    private final GetProcessTimes getProcessTimes;
     private final MethodHandle fileTimeToSystemTime;
     private final MethodHandle getSystemTimeAsFileTime;
 
     public Kernel32(Arena arena) {
-        this.arena = arena;
         this.kernel32 = SymbolLookup.libraryLookup(
                 "kernel32.dll", arena
         );
@@ -39,7 +38,7 @@ public class Kernel32 {
         getNativeSystemInfo = new GetNativeSystemInfo(arena, kernel32);
         getCurrentProcess = new GetCurrentProcess(kernel32);
         getProcessId = new GetProcessId(kernel32);
-        getProcessTimes = createGetProcessTimes();
+        getProcessTimes = new GetProcessTimes(kernel32);
         fileTimeToSystemTime = createFileTimeToSystemTime();
         getSystemTimeAsFileTime = createGetSystemTimeAsFileTime();
     }
@@ -117,7 +116,7 @@ public class Kernel32 {
             MemorySegment lpKernelTimeMemorySegment,
             MemorySegment lpUserTimeMemorySegment
     ) throws Throwable {
-        return (int) getProcessTimes.invokeExact(
+        return getProcessTimes.invoke(
                 process,
                 lpCreationTimeMemorySegment,
                 lpExitTimeMemorySegment,
