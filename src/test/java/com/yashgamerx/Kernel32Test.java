@@ -55,6 +55,17 @@ public class Kernel32Test {
     }
 
     @Test
+    public void testGetNativeSystemInfo() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            var systemInfo = kernel32.getNativeSystemInfo();
+            System.out.println(systemInfo);
+        } catch (Throwable e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
     public void testGetProcessTimes(){
         try (Arena arena = Arena.ofConfined()) {
             Kernel32 kernel32 = new Kernel32(arena);
