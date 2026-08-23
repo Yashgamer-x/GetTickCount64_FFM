@@ -1,16 +1,13 @@
 package org.yashgamerx.kernel;
 
-import org.yashgamerx.kernel.oem.OemId;
-import org.yashgamerx.kernel.oem.ProcessorArchitecture;
+import org.yashgamerx.kernel.errhandlingapi.GetLastError;
 import org.yashgamerx.kernel.oem.System_Info;
 import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
 import org.yashgamerx.kernel.fileapi.GetLogicalDrives;
 import org.yashgamerx.kernel.processthreadsapi.GetProcessTimes;
 import org.yashgamerx.kernel.sysinfoapi.*;
 import org.yashgamerx.kernel.timezoneapi.FileTimeToSystemTime;
-
 import java.lang.foreign.*;
-import java.lang.invoke.MethodHandle;
 
 public class Kernel32 {
 
@@ -26,6 +23,7 @@ public class Kernel32 {
     private final GetProcessTimes getProcessTimes;
     private final FileTimeToSystemTime fileTimeToSystemTime;
     private final GetSystemTimeAsFileTime getSystemTimeAsFileTime;
+    private final GetLastError getLastError;
 
     public Kernel32(Arena arena) {
         this.kernel32 = SymbolLookup.libraryLookup(
@@ -42,6 +40,7 @@ public class Kernel32 {
         getProcessTimes = new GetProcessTimes(kernel32);
         fileTimeToSystemTime = new FileTimeToSystemTime(kernel32);
         getSystemTimeAsFileTime = new GetSystemTimeAsFileTime(kernel32);
+        getLastError = new GetLastError(kernel32);
     }
 
     public long getTickCount64() throws Throwable {
@@ -97,5 +96,9 @@ public class Kernel32 {
 
     public void getSystemTimeAsFileTime(MemorySegment lpSystemTimeAsFileTime) throws Throwable {
         getSystemTimeAsFileTime.invoke(lpSystemTimeAsFileTime);
+    }
+
+    public int getLastError() throws Throwable {
+        return getLastError.invoke();
     }
 }
