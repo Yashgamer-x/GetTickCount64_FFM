@@ -430,4 +430,20 @@ public class Kernel32Test {
             fail(e);
         }
     }
+
+    @Test
+    public void testGetTempPathWFailDueToBufferTooSmall() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            int nBufferLength = 10;
+            MemorySegment lpBuffer = arena.allocate((long)nBufferLength*2);
+            int result = kernel32.getTempPathW(nBufferLength, lpBuffer);
+
+            final var expectedValue = true;
+            final var actualValue = result > nBufferLength;
+            assertEquals(expectedValue, actualValue);
+        } catch (Throwable e) {
+            fail(e);
+        }
+    }
 }
