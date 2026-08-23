@@ -3,8 +3,6 @@ package org.yashgamerx.kernel;
 import org.yashgamerx.kernel.oem.OemId;
 import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
-import org.yashgamerx.kernel.time.SystemTime;
-
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 import java.nio.charset.StandardCharsets;
@@ -272,6 +270,9 @@ public class Kernel32 {
         );
     }
 
+    /// @param lpFileTime \[IN] FILETIME -> lpFileTime is a pointer to a FILETIME structure that contains the time to be converted.
+    /// @param lpSystemTime \[OUT] LPSYSTEMTIM -> lpSystemTime is a pointer to a SYSTEMTIME structure that receives the converted time.
+    /// @return BOOL -> int in java result is either 0 on failed execution or 1 on successful execution
     public int fileTimeToSystemTime(
             MemorySegment lpFileTime,
             MemorySegment lpSystemTime

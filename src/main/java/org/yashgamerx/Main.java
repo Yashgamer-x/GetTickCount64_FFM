@@ -10,7 +10,6 @@ public class Main {
     static void main() {
         try (Arena arena = Arena.ofConfined()) {
             Kernel32 kernel32 = new Kernel32(arena);
-            var process = kernel32.getCurrentProcess();
             var lpSystemTimeAsFileTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
             kernel32.getSystemTimeAsFileTime(lpSystemTimeAsFileTimeMemorySegment);
             var lpSystemTimeMemorySegment = arena.allocate(SystemTime.SYSTEM_TIME_LAYOUT);

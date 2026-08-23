@@ -227,4 +227,25 @@ public class Kernel32Test {
         }
     }
 
+    @Test
+    public void testGetSystemTimeAsFileTime() {
+        try (Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            var lpSystemTimeAsFileTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            kernel32.getSystemTimeAsFileTime(lpSystemTimeAsFileTimeMemorySegment);
+            var lpSystemTimeMemorySegment = arena.allocate(SystemTime.SYSTEM_TIME_LAYOUT);
+            var result = kernel32.fileTimeToSystemTime(
+                    lpSystemTimeAsFileTimeMemorySegment,
+                    lpSystemTimeMemorySegment
+            );
+            if (result == 0) {
+                Assertions.fail("Unable to get the system time");
+            }
+            var lpSystemTime = SystemTime.of(lpSystemTimeMemorySegment);
+            System.out.println("Current System Time "+lpSystemTime);
+        } catch (Throwable e) {
+            Assertions.fail(e);
+        }
+    }
+
 }
