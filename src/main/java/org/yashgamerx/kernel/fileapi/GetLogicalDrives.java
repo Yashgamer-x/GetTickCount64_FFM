@@ -1,4 +1,4 @@
-package org.yashgamerx.kernel.sysinfoapi;
+package org.yashgamerx.kernel.fileapi;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;

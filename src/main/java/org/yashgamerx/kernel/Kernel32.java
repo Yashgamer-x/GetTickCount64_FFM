@@ -3,8 +3,8 @@ package org.yashgamerx.kernel;
 import org.yashgamerx.kernel.oem.OemId;
 import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
-import org.yashgamerx.kernel.sysinfoapi.GetFileAttributeW;
-import org.yashgamerx.kernel.sysinfoapi.GetLogicalDrives;
+import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
+import org.yashgamerx.kernel.fileapi.GetLogicalDrives;
 import org.yashgamerx.kernel.sysinfoapi.GetTickCount64;
 
 import java.lang.foreign.*;
