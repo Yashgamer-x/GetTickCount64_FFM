@@ -4,13 +4,13 @@ import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
 
 public class GetTickCount64 {
-    private final MethodHandle getTickCount64;
+    private final MethodHandle methodHandle;
     private final SymbolLookup kernel32;
     private final Linker linker = Linker.nativeLinker();
 
     public GetTickCount64(SymbolLookup kernel32) {
         this.kernel32 = kernel32;
-        this.getTickCount64 = createGetTickCount64();
+        this.methodHandle = createGetTickCount64();
     }
 
     private MethodHandle createGetTickCount64() {
@@ -23,6 +23,6 @@ public class GetTickCount64 {
     }
 
     public long invoke() throws Throwable {
-        return (long) getTickCount64.invokeExact();
+        return (long) methodHandle.invokeExact();
     }
 }

@@ -3,11 +3,11 @@ package org.yashgamerx.kernel;
 import org.yashgamerx.kernel.oem.OemId;
 import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
+import org.yashgamerx.kernel.sysinfoapi.GetFileAttributeW;
 import org.yashgamerx.kernel.sysinfoapi.GetTickCount64;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
-import java.nio.charset.StandardCharsets;
 
 public class Kernel32 {
 
@@ -15,7 +15,7 @@ public class Kernel32 {
     private final SymbolLookup kernel32;
     private final Linker linker = Linker.nativeLinker();
     private final GetTickCount64 getTickCount64;
-    private final MethodHandle getFileAttributeW;
+    private final GetFileAttributeW getFileAttributeW;
     private final MethodHandle getLogicalDrives;
     private final MethodHandle getSystemInfo;
     private final MethodHandle getNativeSystemInfo;
@@ -32,7 +32,7 @@ public class Kernel32 {
         );
 
         getTickCount64 = new GetTickCount64(kernel32);
-        getFileAttributeW = createGetFileAttributeW();
+        getFileAttributeW = new GetFileAttributeW(arena, kernel32);
         getLogicalDrives = createGetLogicalDrives();
         getSystemInfo = createGetSystemInfo();
         getNativeSystemInfo = createGetNativeSystemInfo();
@@ -41,27 +41,6 @@ public class Kernel32 {
         getProcessTimes = createGetProcessTimes();
         fileTimeToSystemTime = createFileTimeToSystemTime();
         getSystemTimeAsFileTime = createGetSystemTimeAsFileTime();
-    }
-
-    private MethodHandle createGetTickCount64() {
-        MemorySegment getTickCount64_addr = kernel32.find("GetTickCount64")
-                .orElseThrow();
-        return linker.downcallHandle(
-                getTickCount64_addr,
-                FunctionDescriptor.of(ValueLayout.JAVA_LONG)
-        );
-    }
-
-    private MethodHandle createGetFileAttributeW() {
-        MemorySegment getFileAttributesW_addr = kernel32.find("GetFileAttributesW")
-                .orElseThrow();
-        return linker.downcallHandle(
-                getFileAttributesW_addr,
-                FunctionDescriptor.of(
-                        ValueLayout.JAVA_INT,
-                        ValueLayout.ADDRESS
-                )
-        );
     }
 
     private MethodHandle createGetLogicalDrives() {
@@ -152,12 +131,7 @@ public class Kernel32 {
     }
 
     public int getFileAttributesW(String path) throws Throwable {
-        byte[] bytes = (path + "\0").getBytes(StandardCharsets.UTF_16LE);
-
-        MemorySegment pathSegment = arena.allocate(bytes.length);
-        pathSegment.copyFrom(MemorySegment.ofArray(bytes));
-
-        return (int) getFileAttributeW.invokeExact(pathSegment);
+        return getFileAttributeW.invoke(path);
     }
 
     public int getLogicalDrives() throws Throwable {
