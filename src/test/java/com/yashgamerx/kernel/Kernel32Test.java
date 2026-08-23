@@ -8,6 +8,7 @@ import org.yashgamerx.kernel.time.SystemTime;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
+import java.lang.foreign.ValueLayout;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -341,6 +342,29 @@ public class Kernel32Test {
             }
             System.out.println("Length: " + length);
             System.out.println("Value: " + value);
+        } catch (Throwable e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    public void testGetComputerNameW() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            int characterSize = 16;
+            MemorySegment lpBuffer = arena.allocate((long)characterSize*2);
+            MemorySegment size = arena.allocate(4); // 32-bit pointer
+            size.set(ValueLayout.JAVA_INT, 0, characterSize);
+            int result = kernel32.getComputerNameW(lpBuffer, size);
+            if (result == 0) {
+                fail("Unable to get the computer name");
+            }
+            int length = size.get(ValueLayout.JAVA_INT, 0);
+            String computerName = lpBuffer.getString(0, StandardCharsets.UTF_16LE);
+            assertNotEquals(0, length);
+            assertNotNull(computerName);
+            System.out.println("Computer Name: " + computerName);
+            System.out.println("Computer Name Length: " + length);
         } catch (Throwable e) {
             fail(e);
         }

@@ -9,6 +9,8 @@ import org.yashgamerx.kernel.processenv.GetEnvironmentVariableW;
 import org.yashgamerx.kernel.processthreadsapi.GetProcessTimes;
 import org.yashgamerx.kernel.sysinfoapi.*;
 import org.yashgamerx.kernel.timezoneapi.FileTimeToSystemTime;
+import org.yashgamerx.kernel.winbase.GetComputerNameW;
+
 import java.lang.foreign.*;
 
 public class Kernel32 {
@@ -28,6 +30,7 @@ public class Kernel32 {
     private final GetLastError getLastError;
     private final SetLastError setLastError;
     private final GetEnvironmentVariableW getEnvironmentVariableW;
+    private final GetComputerNameW getComputerNameW;
 
     public Kernel32(Arena arena) {
         this.kernel32 = SymbolLookup.libraryLookup(
@@ -47,6 +50,7 @@ public class Kernel32 {
         getLastError = new GetLastError(kernel32);
         setLastError = new SetLastError(kernel32);
         getEnvironmentVariableW = new GetEnvironmentVariableW(kernel32);
+        getComputerNameW = new GetComputerNameW(kernel32);
     }
 
     public long getTickCount64() throws Throwable {
@@ -114,5 +118,9 @@ public class Kernel32 {
 
     public int getEnvironmentVariable(MemorySegment lpName, MemorySegment lpBuffer, int size) throws Throwable {
         return  getEnvironmentVariableW.invoke(lpName, lpBuffer, size);
+    }
+
+    public int getComputerNameW(MemorySegment lpBuffer, MemorySegment size) throws Throwable {
+        return getComputerNameW.invoke(lpBuffer, size);
     }
 }
