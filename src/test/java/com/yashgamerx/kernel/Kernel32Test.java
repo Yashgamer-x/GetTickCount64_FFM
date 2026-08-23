@@ -387,4 +387,25 @@ public class Kernel32Test {
             fail(e);
         }
     }
+
+    @Test
+    public void testGetModuleFileNameW() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            int characterSize = 2048;
+            MemorySegment lpBuffer = arena.allocate((long)characterSize*2);
+            int result = kernel32.getModuleFileNameW(MemorySegment.NULL, lpBuffer, characterSize);
+
+            if (result == 0) {
+                fail("Unable to get the module file name");
+            }
+
+            String moduleFileName = lpBuffer.getString(0, StandardCharsets.UTF_16LE);
+            assertEquals(result, moduleFileName.length());
+            System.out.println("Module File Name: " + moduleFileName);
+            System.out.println("Character Count: " + result);
+        } catch (Throwable e) {
+            fail(e);
+        }
+    }
 }
