@@ -1,6 +1,7 @@
 package org.yashgamerx.kernel;
 
 import org.yashgamerx.kernel.errhandlingapi.GetLastError;
+import org.yashgamerx.kernel.errhandlingapi.SetLastError;
 import org.yashgamerx.kernel.oem.System_Info;
 import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
 import org.yashgamerx.kernel.fileapi.GetLogicalDrives;
@@ -24,6 +25,7 @@ public class Kernel32 {
     private final FileTimeToSystemTime fileTimeToSystemTime;
     private final GetSystemTimeAsFileTime getSystemTimeAsFileTime;
     private final GetLastError getLastError;
+    private final SetLastError setLastError;
 
     public Kernel32(Arena arena) {
         this.kernel32 = SymbolLookup.libraryLookup(
@@ -41,6 +43,7 @@ public class Kernel32 {
         fileTimeToSystemTime = new FileTimeToSystemTime(kernel32);
         getSystemTimeAsFileTime = new GetSystemTimeAsFileTime(kernel32);
         getLastError = new GetLastError(kernel32);
+        setLastError = new SetLastError(kernel32);
     }
 
     public long getTickCount64() throws Throwable {
@@ -100,5 +103,9 @@ public class Kernel32 {
 
     public int getLastError() throws Throwable {
         return getLastError.invoke();
+    }
+
+    public void setLastError(int dwErrCode) throws Throwable {
+        setLastError.invoke(dwErrCode);
     }
 }
