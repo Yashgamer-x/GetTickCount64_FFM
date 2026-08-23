@@ -282,4 +282,15 @@ public class Kernel32Test {
         }
     }
 
+    @Test
+    public void testGetLastError() {
+        try (Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            var lastError = kernel32.getLastError();
+            System.out.println("Last Error: " + lastError);
+        } catch (Throwable e) {
+            Assertions.fail(e);
+        }
+    }
+
 }
