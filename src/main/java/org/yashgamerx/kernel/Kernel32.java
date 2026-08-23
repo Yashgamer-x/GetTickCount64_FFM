@@ -25,7 +25,7 @@ public class Kernel32 {
     private final GetProcessId getProcessId;
     private final GetProcessTimes getProcessTimes;
     private final FileTimeToSystemTime fileTimeToSystemTime;
-    private final MethodHandle getSystemTimeAsFileTime;
+    private final GetSystemTimeAsFileTime getSystemTimeAsFileTime;
 
     public Kernel32(Arena arena) {
         this.kernel32 = SymbolLookup.libraryLookup(
@@ -41,16 +41,7 @@ public class Kernel32 {
         getProcessId = new GetProcessId(kernel32);
         getProcessTimes = new GetProcessTimes(kernel32);
         fileTimeToSystemTime = new FileTimeToSystemTime(kernel32);
-        getSystemTimeAsFileTime = createGetSystemTimeAsFileTime();
-    }
-
-    private MethodHandle createGetSystemTimeAsFileTime() {
-        MemorySegment getSystemTimeAsFileTime_addr = kernel32.find("GetSystemTimeAsFileTime")
-                .orElseThrow();
-        return linker.downcallHandle(
-                getSystemTimeAsFileTime_addr,
-                FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)
-        );
+        getSystemTimeAsFileTime = new GetSystemTimeAsFileTime(kernel32);
     }
 
     public long getTickCount64() throws Throwable {
@@ -105,6 +96,6 @@ public class Kernel32 {
     }
 
     public void getSystemTimeAsFileTime(MemorySegment lpSystemTimeAsFileTime) throws Throwable {
-        getSystemTimeAsFileTime.invokeExact(lpSystemTimeAsFileTime);
+        getSystemTimeAsFileTime.invoke(lpSystemTimeAsFileTime);
     }
 }
