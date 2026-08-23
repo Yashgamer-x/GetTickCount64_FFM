@@ -5,10 +5,7 @@ import org.yashgamerx.kernel.oem.ProcessorArchitecture;
 import org.yashgamerx.kernel.oem.System_Info;
 import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
 import org.yashgamerx.kernel.fileapi.GetLogicalDrives;
-import org.yashgamerx.kernel.sysinfoapi.GetCurrentProcess;
-import org.yashgamerx.kernel.sysinfoapi.GetNativeSystemInfo;
-import org.yashgamerx.kernel.sysinfoapi.GetSystemInfo;
-import org.yashgamerx.kernel.sysinfoapi.GetTickCount64;
+import org.yashgamerx.kernel.sysinfoapi.*;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;
@@ -24,7 +21,7 @@ public class Kernel32 {
     private final GetSystemInfo getSystemInfo;
     private final GetNativeSystemInfo getNativeSystemInfo;
     private final GetCurrentProcess getCurrentProcess;
-    private final MethodHandle getProcessId;
+    private final GetProcessId getProcessId;
     private final MethodHandle getProcessTimes;
     private final MethodHandle fileTimeToSystemTime;
     private final MethodHandle getSystemTimeAsFileTime;
@@ -41,19 +38,10 @@ public class Kernel32 {
         getSystemInfo = new GetSystemInfo(arena, kernel32);
         getNativeSystemInfo = new GetNativeSystemInfo(arena, kernel32);
         getCurrentProcess = new GetCurrentProcess(kernel32);
-        getProcessId = createGetProcessId();
+        getProcessId = new GetProcessId(kernel32);
         getProcessTimes = createGetProcessTimes();
         fileTimeToSystemTime = createFileTimeToSystemTime();
         getSystemTimeAsFileTime = createGetSystemTimeAsFileTime();
-    }
-
-    private MethodHandle createGetProcessId() {
-        MemorySegment getProcessId_addr = kernel32.find("GetProcessId")
-                .orElseThrow();
-        return linker.downcallHandle(
-                getProcessId_addr,
-                FunctionDescriptor.of(ValueLayout.JAVA_INT, ValueLayout.ADDRESS)
-        );
     }
 
     private MethodHandle createFileTimeToSystemTime() {
@@ -119,7 +107,7 @@ public class Kernel32 {
     }
 
     public int getProcessId(MemorySegment process) throws Throwable {
-        return (int) getProcessId.invokeExact(process);
+        return getProcessId.invoke(process);
     }
 
     public int getProcessTimes(
