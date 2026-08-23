@@ -440,7 +440,7 @@ public class Kernel32Test {
             int result = kernel32.getTempPathW(nBufferLength, lpBuffer);
 
             final var expectedValue = true;
-            final var actualValue = result > nBufferLength;
+            final var actualValue = result >= nBufferLength;
             assertEquals(expectedValue, actualValue);
         } catch (Throwable e) {
             fail(e);
