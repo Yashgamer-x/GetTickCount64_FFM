@@ -66,6 +66,29 @@ public class Kernel32Test {
     }
 
     @Test
+    public void testGetProcess() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            var process = kernel32.getCurrentProcess();
+            System.out.println(process);
+        } catch (Throwable e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
+    public void testGetProcessId() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            var process = kernel32.getCurrentProcess();
+            var processId = kernel32.getProcessId(process);
+            System.out.println(processId);
+        } catch (Throwable e) {
+            Assertions.fail(e);
+        }
+    }
+
+    @Test
     public void testGetProcessTimes(){
         try (Arena arena = Arena.ofConfined()) {
             Kernel32 kernel32 = new Kernel32(arena);
