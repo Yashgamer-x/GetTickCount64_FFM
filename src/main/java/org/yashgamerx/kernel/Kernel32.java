@@ -5,6 +5,7 @@ import org.yashgamerx.kernel.errhandlingapi.SetLastError;
 import org.yashgamerx.kernel.oem.System_Info;
 import org.yashgamerx.kernel.fileapi.GetFileAttributeW;
 import org.yashgamerx.kernel.fileapi.GetLogicalDrives;
+import org.yashgamerx.kernel.processenv.GetEnvironmentVariableW;
 import org.yashgamerx.kernel.processthreadsapi.GetProcessTimes;
 import org.yashgamerx.kernel.sysinfoapi.*;
 import org.yashgamerx.kernel.timezoneapi.FileTimeToSystemTime;
@@ -26,6 +27,7 @@ public class Kernel32 {
     private final GetSystemTimeAsFileTime getSystemTimeAsFileTime;
     private final GetLastError getLastError;
     private final SetLastError setLastError;
+    private final GetEnvironmentVariableW getEnvironmentVariableW;
 
     public Kernel32(Arena arena) {
         this.kernel32 = SymbolLookup.libraryLookup(
@@ -44,6 +46,7 @@ public class Kernel32 {
         getSystemTimeAsFileTime = new GetSystemTimeAsFileTime(kernel32);
         getLastError = new GetLastError(kernel32);
         setLastError = new SetLastError(kernel32);
+        getEnvironmentVariableW = new GetEnvironmentVariableW(kernel32);
     }
 
     public long getTickCount64() throws Throwable {
@@ -107,5 +110,9 @@ public class Kernel32 {
 
     public void setLastError(int dwErrCode) throws Throwable {
         setLastError.invoke(dwErrCode);
+    }
+
+    public int getEnvironmentVariable(MemorySegment lpName, MemorySegment lpBuffer, int size) throws Throwable {
+        return  getEnvironmentVariableW.invoke(lpName, lpBuffer, size);
     }
 }
