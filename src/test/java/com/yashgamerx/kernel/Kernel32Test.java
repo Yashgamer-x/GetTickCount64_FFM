@@ -8,6 +8,8 @@ import org.yashgamerx.kernel.time.SystemTime;
 
 import java.lang.foreign.Arena;
 
+import static org.junit.jupiter.api.Assertions.*;
+
 public class Kernel32Test {
 
     @Test
@@ -17,7 +19,7 @@ public class Kernel32Test {
             long tickCount = kernel32.getTickCount64();
             Assertions.assertNotEquals(0, tickCount);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -26,9 +28,9 @@ public class Kernel32Test {
         try(Arena arena = Arena.ofConfined()) {
             Kernel32 kernel32 = new Kernel32(arena);
             int perm = kernel32.getFileAttributesW("C:\\Windows");
-            Assertions.assertEquals(16, perm);
+            assertEquals(16, perm);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -39,7 +41,7 @@ public class Kernel32Test {
             int drives = kernel32.getLogicalDrives();
             System.out.println(Integer.toBinaryString(drives));
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -50,7 +52,7 @@ public class Kernel32Test {
             var systemInfo = kernel32.getSystemInfo();
             System.out.println(systemInfo);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -61,7 +63,7 @@ public class Kernel32Test {
             var systemInfo = kernel32.getNativeSystemInfo();
             System.out.println(systemInfo);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -72,7 +74,7 @@ public class Kernel32Test {
             var process = kernel32.getCurrentProcess();
             System.out.println(process);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -84,7 +86,7 @@ public class Kernel32Test {
             var processId = kernel32.getProcessId(process);
             System.out.println(processId);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -114,7 +116,7 @@ public class Kernel32Test {
             System.out.println(lpKernelTime);
             System.out.println(lpUserTime);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -148,18 +150,18 @@ public class Kernel32Test {
 
             var systemTime = SystemTime.of(systemTimeMemory);
 
-            Assertions.assertTrue(systemTime.wYear() >= 2025);
-            Assertions.assertTrue(systemTime.wMonth() >= 1 && systemTime.wMonth() <= 12);
-            Assertions.assertTrue(systemTime.wDay() >= 1 && systemTime.wDay() <= 31);
-            Assertions.assertTrue(systemTime.wHour() >= 0 && systemTime.wHour() <= 23);
-            Assertions.assertTrue(systemTime.wMinute() >= 0 && systemTime.wMinute() <= 59);
-            Assertions.assertTrue(systemTime.wSecond() >= 0 && systemTime.wSecond() <= 59);
-            Assertions.assertTrue(systemTime.wMillisecond() >= 0 && systemTime.wMillisecond() <= 999);
+            assertTrue(systemTime.wYear() >= 2025);
+            assertTrue(systemTime.wMonth() >= 1 && systemTime.wMonth() <= 12);
+            assertTrue(systemTime.wDay() >= 1 && systemTime.wDay() <= 31);
+            assertTrue(systemTime.wHour() >= 0 && systemTime.wHour() <= 23);
+            assertTrue(systemTime.wMinute() >= 0 && systemTime.wMinute() <= 59);
+            assertTrue(systemTime.wSecond() >= 0 && systemTime.wSecond() <= 59);
+            assertTrue(systemTime.wMillisecond() >= 0 && systemTime.wMillisecond() <= 999);
 
             System.out.println(systemTime);
 
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -185,14 +187,14 @@ public class Kernel32Test {
 
             var userTime = LpFileTime.of(userMemory);
 
-            Assertions.assertTrue(userTime.toMilliseconds() >= 0);
+            assertTrue(userTime.toMilliseconds() >= 0);
 
             System.out.println(
                     "User CPU Time: " + userTime.toMilliseconds() + " ms"
             );
 
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -218,14 +220,14 @@ public class Kernel32Test {
 
             var kernelTime = LpFileTime.of(kernelMemory);
 
-            Assertions.assertTrue(kernelTime.toMilliseconds() >= 0);
+            assertTrue(kernelTime.toMilliseconds() >= 0);
 
             System.out.println(
                     "Kernel CPU Time: " + kernelTime.toMilliseconds() + " ms"
             );
 
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -251,13 +253,13 @@ public class Kernel32Test {
 
             var exitTime = LpFileTime.of(exitMemory);
 
-            Assertions.assertEquals(0, exitTime.dwLowDateTime());
-            Assertions.assertEquals(0, exitTime.dwHighDateTime());
+            assertEquals(0, exitTime.dwLowDateTime());
+            assertEquals(0, exitTime.dwHighDateTime());
 
             System.out.println("Exit Time: " + exitTime);
 
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -273,12 +275,12 @@ public class Kernel32Test {
                     lpSystemTimeMemorySegment
             );
             if (result == 0) {
-                Assertions.fail("Unable to get the system time");
+                fail("Unable to get the system time");
             }
             var lpSystemTime = SystemTime.of(lpSystemTimeMemorySegment);
             System.out.println("Current System Time "+lpSystemTime);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
@@ -289,19 +291,33 @@ public class Kernel32Test {
             var lastError = kernel32.getLastError();
             System.out.println("Last Error: " + lastError);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
         }
     }
 
     @Test
     public void testSetLastError() {
         try (Arena arena = Arena.ofConfined()) {
+            final var expectedError = 12345;
             Kernel32 kernel32 = new Kernel32(arena);
-            kernel32.setLastError(111);
+            kernel32.setLastError(expectedError);
             var lastError = kernel32.getLastError();
-            System.out.println("Last Error: " + lastError);
+            assertEquals(expectedError, lastError);
         } catch (Throwable e) {
-            Assertions.fail(e);
+            fail(e);
+        }
+    }
+
+    @Test
+    public void testInvalidGetFileAttributesW() {
+        try(Arena arena = Arena.ofConfined()) {
+            Kernel32 kernel32 = new Kernel32(arena);
+            var perm = kernel32.getFileAttributesW("C:\\does-not-exists");
+            assertEquals(-1, perm);
+            var lastError = kernel32.getLastError();
+            assertEquals(2, lastError);
+        } catch (Throwable e) {
+            fail(e);
         }
     }
 
