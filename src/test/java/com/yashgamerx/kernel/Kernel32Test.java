@@ -1,4 +1,4 @@
-package com.yashgamerx;
+package com.yashgamerx.kernel;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
