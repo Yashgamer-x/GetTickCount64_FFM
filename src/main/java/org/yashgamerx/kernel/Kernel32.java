@@ -23,6 +23,7 @@ public class Kernel32 {
     private final MethodHandle getProcessId;
     private final MethodHandle getProcessTimes;
     private final MethodHandle fileTimeToSystemTime;
+    private final MethodHandle getSystemTimeAsFileTime;
 
     public Kernel32(Arena arena) {
         this.arena = arena;
@@ -39,6 +40,7 @@ public class Kernel32 {
         getProcessId = createGetProcessId();
         getProcessTimes = createGetProcessTimes();
         fileTimeToSystemTime = createFileTimeToSystemTime();
+        getSystemTimeAsFileTime = createGetSystemTimeAsFileTime();
     }
 
     private MethodHandle createGetTickCount64() {
@@ -133,6 +135,15 @@ public class Kernel32 {
                         ValueLayout.ADDRESS,  // LPFILETIME - lpKernelTime
                         ValueLayout.ADDRESS   // LPFILETIME - lpUserTime
                 )
+        );
+    }
+
+    private MethodHandle createGetSystemTimeAsFileTime() {
+        MemorySegment getSystemTimeAsFileTime_addr = kernel32.find("GetSystemTimeAsFileTime")
+                .orElseThrow();
+        return linker.downcallHandle(
+                getSystemTimeAsFileTime_addr,
+                FunctionDescriptor.ofVoid(ValueLayout.ADDRESS)
         );
     }
 
@@ -269,5 +280,9 @@ public class Kernel32 {
                 lpFileTime,
                 lpSystemTime
         );
+    }
+
+    public void getSystemTimeAsFileTime(MemorySegment lpSystemTimeAsFileTime) throws Throwable {
+        getSystemTimeAsFileTime.invokeExact(lpSystemTimeAsFileTime);
     }
 }

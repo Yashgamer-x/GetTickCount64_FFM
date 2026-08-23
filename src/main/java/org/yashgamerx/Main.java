@@ -11,27 +11,15 @@ public class Main {
         try (Arena arena = Arena.ofConfined()) {
             Kernel32 kernel32 = new Kernel32(arena);
             var process = kernel32.getCurrentProcess();
-            var lpCreationTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
-            var lpExitTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
-            var lpKernelTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
-            var lpUserTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
-            var _ = kernel32.getProcessTimes(
-                    process,
-                    lpCreationTimeMemorySegment,
-                    lpExitTimeMemorySegment,
-                    lpKernelTimeMemorySegment,
-                    lpUserTimeMemorySegment
-            );
-
-
-            var lpCreationSystemTime = arena.allocate(SystemTime.SYSTEM_TIME_LAYOUT);
+            var lpSystemTimeAsFileTimeMemorySegment = arena.allocate(LpFileTime.LP_FILE_TIME_LAYOUT);
+            kernel32.getSystemTimeAsFileTime(lpSystemTimeAsFileTimeMemorySegment);
+            var lpSystemTimeMemorySegment = arena.allocate(SystemTime.SYSTEM_TIME_LAYOUT);
             var _ = kernel32.fileTimeToSystemTime(
-                    lpCreationTimeMemorySegment,
-                    lpCreationSystemTime
+                    lpSystemTimeAsFileTimeMemorySegment,
+                    lpSystemTimeMemorySegment
             );
-            var lpCreationTime = SystemTime.of(lpCreationSystemTime);
-            System.out.println("Creation "+lpCreationTime);
-
+            var lpSystemTime = SystemTime.of(lpSystemTimeMemorySegment);
+            System.out.println("Current System Time "+lpSystemTime);
         } catch (Throwable e) {
             System.out.println(e.toString());
             e.printStackTrace();
