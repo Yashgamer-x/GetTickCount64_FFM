@@ -50,7 +50,7 @@ public class Kernel32Test {
             var systemInfo = kernel32.getSystemInfo();
             System.out.println(systemInfo);
         } catch (Throwable e) {
-            Assertions.fail();
+            Assertions.fail(e);
         }
     }
 
