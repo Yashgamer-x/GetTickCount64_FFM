@@ -26,11 +26,12 @@ public record Rect(
     public static final VarHandle BOTTOM_HANDLE = RECT_LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("bottom"));
 
     public static Rect of(MemorySegment segment) {
+        MemorySegment rect = segment.reinterpret(RECT_LAYOUT.byteSize());
         return new Rect(
-                (int) LEFT_HANDLE.get(segment, 0L),
-                (int) TOP_HANDLE.get(segment, 0L),
-                (int) RIGHT_HANDLE.get(segment, 0L),
-                (int) BOTTOM_HANDLE.get(segment, 0L)
+                (int) LEFT_HANDLE.get(rect, 0L),
+                (int) TOP_HANDLE.get(rect, 0L),
+                (int) RIGHT_HANDLE.get(rect, 0L),
+                (int) BOTTOM_HANDLE.get(rect, 0L)
         );
     }
 }

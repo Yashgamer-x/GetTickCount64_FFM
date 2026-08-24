@@ -65,4 +65,24 @@ public class User32Test {
             fail(e);
         }
     }
+
+    @Test
+    public void testEnumDisplayMonitorsWithRectValues() {
+        try(Arena arena = Arena.ofConfined()) {
+            User32 user32 = new User32(arena);
+            MonitorEnumProc enumChildWindowsProc = new MonitorEnumProc();
+            MemorySegment callback = enumChildWindowsProc.createCallback(arena);
+            MemorySegment rectMemorySegment = arena.allocate(Rect.RECT_LAYOUT);
+
+            Rect.LEFT_HANDLE.set(rectMemorySegment, 0L, 0);
+            Rect.TOP_HANDLE.set(rectMemorySegment, 0L, 0);
+            Rect.RIGHT_HANDLE.set(rectMemorySegment, 0L, 1920);
+            Rect.BOTTOM_HANDLE.set(rectMemorySegment, 0L, 1080);
+
+            int result = user32.enumDisplayMonitors(MemorySegment.NULL, rectMemorySegment, callback, 0);
+            System.out.println("Result: "+result);
+        } catch (Throwable e) {
+            fail(e);
+        }
+    }
 }

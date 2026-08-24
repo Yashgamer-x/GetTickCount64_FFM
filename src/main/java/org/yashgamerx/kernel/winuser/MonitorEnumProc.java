@@ -17,7 +17,7 @@ public class MonitorEnumProc {
             );
 
     public int callback(MemorySegment hMonitor, MemorySegment hdc, MemorySegment lprc, long dwData) {
-        if (lprc.byteSize() < Rect.RECT_LAYOUT.byteSize()) {
+        if (lprc.equals(MemorySegment.NULL)) {
             return 0;
         }
 
