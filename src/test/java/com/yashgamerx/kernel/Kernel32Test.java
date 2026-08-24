@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 import org.yashgamerx.kernel.Kernel32;
 import org.yashgamerx.kernel.time.LpFileTime;
 import org.yashgamerx.kernel.time.SystemTime;
+import org.yashgamerx.kernel.winuser.EnumWindows;
+import org.yashgamerx.kernel.winuser.EnumWindowsProc;
+import org.yashgamerx.user32.User32;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
