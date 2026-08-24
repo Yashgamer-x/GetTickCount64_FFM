@@ -20,10 +20,10 @@ public record Rect(
             );
 
     // Var Handles
-    private static final VarHandle LEFT_HANDLE = RECT_LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("left"));
-    private static final VarHandle TOP_HANDLE = RECT_LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("top"));
-    private static final VarHandle RIGHT_HANDLE = RECT_LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("right"));
-    private static final VarHandle BOTTOM_HANDLE = RECT_LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("bottom"));
+    public static final VarHandle LEFT_HANDLE = RECT_LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("left"));
+    public static final VarHandle TOP_HANDLE = RECT_LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("top"));
+    public static final VarHandle RIGHT_HANDLE = RECT_LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("right"));
+    public static final VarHandle BOTTOM_HANDLE = RECT_LAYOUT.varHandle(MemoryLayout.PathElement.groupElement("bottom"));
 
     public static Rect of(MemorySegment segment) {
         return new Rect(
