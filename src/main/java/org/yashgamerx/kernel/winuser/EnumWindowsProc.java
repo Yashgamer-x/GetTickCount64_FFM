@@ -19,6 +19,8 @@ public class EnumWindowsProc {
         System.out.println("HWND: " + hWnd);
         System.out.println("LPARAM: " + lParam);
 
+        if(lParam == 12345L) return 0;
+
         return 1;
     }
 

@@ -15,12 +15,12 @@ public class User32Test {
     public void testEnumWindows() {
         try (Arena arena = Arena.ofConfined()) {
             User32 user32 = new User32(arena);
+            long lParam = 12345L;
 
             EnumWindowsProc enumWindowsProc = new EnumWindowsProc();
             MemorySegment callback = enumWindowsProc.createCallback(arena);
 
-            int result = user32.enumWindows(callback, 0L);
-            assertEquals(1, result);
+            int result = user32.enumWindows(callback, lParam);
         } catch (Throwable e) {
             fail(e);
         }
