@@ -27,7 +27,7 @@ public class User32Test {
     }
 
     @Test
-    public void testEnumDisplayMonitors() {
+    public void testEnumChildWindows() {
         try (Arena arena = Arena.ofConfined()) {
             User32 user32 = new User32(arena);
             EnumChildWindowsProc enumChildWindowsProc = new EnumChildWindowsProc();
