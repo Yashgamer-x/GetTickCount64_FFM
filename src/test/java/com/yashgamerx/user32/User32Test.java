@@ -1,10 +1,7 @@
 package com.yashgamerx.user32;
 
 import org.junit.jupiter.api.Test;
-import org.yashgamerx.kernel.winuser.EnumChildWindows;
-import org.yashgamerx.kernel.winuser.EnumChildWindowsProc;
-import org.yashgamerx.kernel.winuser.EnumWindowsProc;
-import org.yashgamerx.kernel.winuser.MonitorEnumProc;
+import org.yashgamerx.kernel.winuser.*;
 import org.yashgamerx.user32.User32;
 
 import java.lang.foreign.Arena;
@@ -48,6 +45,22 @@ public class User32Test {
             MemorySegment callback = enumChildWindowsProc.createCallback(arena);
 
             int result = user32.enumDisplayMonitors(MemorySegment.NULL, MemorySegment.NULL, callback, 0);
+            System.out.println("Result: "+result);
+        } catch (Throwable e) {
+            fail(e);
+        }
+    }
+
+    @Test
+    public void testEnumDisplayMonitorsWithRectAsValue0() {
+        try(Arena arena = Arena.ofConfined()) {
+            User32 user32 = new User32(arena);
+            MonitorEnumProc enumChildWindowsProc = new MonitorEnumProc();
+            MemorySegment callback = enumChildWindowsProc.createCallback(arena);
+            MemorySegment rectMemorySegment = arena.allocate(Rect.RECT_LAYOUT);
+
+            int result = user32.enumDisplayMonitors(MemorySegment.NULL, rectMemorySegment, callback, 0);
+            System.out.println("Result: "+result);
         } catch (Throwable e) {
             fail(e);
         }

@@ -17,9 +17,15 @@ public class MonitorEnumProc {
             );
 
     public int callback(MemorySegment hMonitor, MemorySegment hdc, MemorySegment lprc, long dwData) {
+        if (lprc.byteSize() < Rect.RECT_LAYOUT.byteSize()) {
+            return 0;
+        }
+
+        Rect rect = Rect.of(lprc);
+
         System.out.println("hMonitor: " + hMonitor);
         System.out.println("hdc: " + hdc);
-        System.out.println("lprc: " + lprc);
+        System.out.println("Rect: " + rect);
         System.out.println("dwData: " + dwData);
         System.out.println("----------------------------------------");
         return 1;
