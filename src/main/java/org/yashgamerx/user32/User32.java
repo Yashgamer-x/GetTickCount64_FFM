@@ -1,5 +1,6 @@
 package org.yashgamerx.user32;
 
+import org.yashgamerx.kernel.winuser.EnumChildWindows;
 import org.yashgamerx.kernel.winuser.EnumWindows;
 
 import java.lang.foreign.Arena;
@@ -10,6 +11,7 @@ public class User32 {
 
     private final SymbolLookup user32;
     private final EnumWindows enumWindows;
+    private final EnumChildWindows enumChildWindows;
 
     public User32(Arena arena) {
         this.user32 = SymbolLookup.libraryLookup(
@@ -17,9 +19,14 @@ public class User32 {
         );
 
         this.enumWindows = new EnumWindows(user32);
+        this.enumChildWindows = new EnumChildWindows(user32);
     }
 
     public int enumWindows(MemorySegment hwnd, long lParam) throws Throwable {
         return enumWindows.invoke(hwnd, lParam);
+    }
+
+    public int enumChildWindows(MemorySegment hwndParent, MemorySegment hwnd, long lParam) throws Throwable {
+        return enumChildWindows.invoke(hwndParent, hwnd, lParam);
     }
 }
