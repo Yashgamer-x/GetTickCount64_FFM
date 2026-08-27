@@ -20,12 +20,12 @@ public record MonitorInfo(
                     ValueLayout.JAVA_INT.withName("dwFlags")
             );
 
-    private static final VarHandle CB_SIZE_HANDLE =
+    public static final VarHandle CB_SIZE_HANDLE =
             MONITOR_INFO_LAYOUT.varHandle(
                     MemoryLayout.PathElement.groupElement("cbSize")
             );
 
-    private static final VarHandle FLAGS_HANDLE =
+    public static final VarHandle FLAGS_HANDLE =
             MONITOR_INFO_LAYOUT.varHandle(
                     MemoryLayout.PathElement.groupElement("dwFlags")
             );

@@ -3,6 +3,7 @@ package org.yashgamerx.user32;
 import org.yashgamerx.user32.winuser.EnumChildWindows;
 import org.yashgamerx.user32.winuser.EnumDisplayMonitors;
 import org.yashgamerx.user32.winuser.EnumWindows;
+import org.yashgamerx.user32.winuser.GetMonitorInfoW;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
@@ -14,6 +15,7 @@ public class User32 {
     private final EnumWindows enumWindows;
     private final EnumChildWindows enumChildWindows;
     private final EnumDisplayMonitors enumDisplayMonitors;
+    private final GetMonitorInfoW getMonitorInfoW;
 
     public User32(Arena arena) {
         this.user32 = SymbolLookup.libraryLookup(
@@ -23,6 +25,7 @@ public class User32 {
         this.enumWindows = new EnumWindows(user32);
         this.enumChildWindows = new EnumChildWindows(user32);
         this.enumDisplayMonitors = new EnumDisplayMonitors(user32);
+        this.getMonitorInfoW = new GetMonitorInfoW(user32);
     }
 
     public int enumWindows(MemorySegment hwnd, long lParam) throws Throwable {
@@ -35,5 +38,9 @@ public class User32 {
 
     public int enumDisplayMonitors(MemorySegment hdc, MemorySegment lprcClip, MemorySegment lpfnEnum, long dwData) throws Throwable {
         return enumDisplayMonitors.invoke(hdc, lprcClip, lpfnEnum, dwData);
+    }
+
+    public int getMonitorInfoW(MemorySegment hMonitor, MemorySegment lpmi) throws Throwable {
+        return getMonitorInfoW.invoke(hMonitor, lpmi);
     }
 }
