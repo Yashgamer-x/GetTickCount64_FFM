@@ -1,4 +1,4 @@
-package org.yashgamerx.kernel.winuser;
+package org.yashgamerx.user32.winuser;
 
 import java.lang.foreign.MemoryLayout;
 import java.lang.foreign.MemorySegment;

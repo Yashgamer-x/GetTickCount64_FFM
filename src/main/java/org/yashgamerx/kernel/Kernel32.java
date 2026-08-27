@@ -12,8 +12,6 @@ import org.yashgamerx.kernel.processthreadsapi.GetProcessTimes;
 import org.yashgamerx.kernel.sysinfoapi.*;
 import org.yashgamerx.kernel.timezoneapi.FileTimeToSystemTime;
 import org.yashgamerx.kernel.winbase.GetComputerNameW;
-import org.yashgamerx.kernel.winuser.EnumWindows;
-
 import java.lang.foreign.*;
 
 public class Kernel32 {

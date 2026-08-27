@@ -1,8 +1,11 @@
 package com.yashgamerx.user32;
 
 import org.junit.jupiter.api.Test;
-import org.yashgamerx.kernel.winuser.*;
 import org.yashgamerx.user32.User32;
+import org.yashgamerx.user32.winuser.EnumChildWindowsProc;
+import org.yashgamerx.user32.winuser.EnumWindowsProc;
+import org.yashgamerx.user32.winuser.MonitorEnumProc;
+import org.yashgamerx.user32.winuser.Rect;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;

@@ -1,4 +1,4 @@
-package org.yashgamerx.kernel.winuser;
+package org.yashgamerx.user32.winuser;
 
 import java.lang.foreign.*;
 import java.lang.invoke.MethodHandle;

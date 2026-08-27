@@ -1,8 +1,8 @@
 package org.yashgamerx.user32;
 
-import org.yashgamerx.kernel.winuser.EnumChildWindows;
-import org.yashgamerx.kernel.winuser.EnumDisplayMonitors;
-import org.yashgamerx.kernel.winuser.EnumWindows;
+import org.yashgamerx.user32.winuser.EnumChildWindows;
+import org.yashgamerx.user32.winuser.EnumDisplayMonitors;
+import org.yashgamerx.user32.winuser.EnumWindows;
 
 import java.lang.foreign.Arena;
 import java.lang.foreign.MemorySegment;
